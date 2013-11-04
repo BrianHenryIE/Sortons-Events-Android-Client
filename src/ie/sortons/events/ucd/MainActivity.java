@@ -69,6 +69,8 @@ public class MainActivity extends Activity {
 				try {
 					DiscoveredEventCollection pojo = builder.build().upcomingEventsEndpoint().getList("197528567092983").execute();
 
+					Log.i("Asd", pojo.toPrettyString());
+					
 					upcomingEvents = pojo.getItems();
 
 					return null;
