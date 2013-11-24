@@ -24,7 +24,7 @@ public class DiscoveredEventRowAdapter extends ArrayAdapter<DiscoveredEvent> {
 		this.context = context;
 		dbTools = new DBTools(context);
 		this.events = events;
-		Log.i("RowAdapterDBTools", "Discovered event Row Adapter constructed");
+		Log.i("RowAdapterDBTools", "Discovered event Row Adapter constructed with " + events.size() + " events");
 	}
 
 	static class ViewHolder {
@@ -36,12 +36,17 @@ public class DiscoveredEventRowAdapter extends ArrayAdapter<DiscoveredEvent> {
 	}
 
 
+	@Override
+	public int getCount() {
+		return events.size();
+	}
 	/* (non-Javadoc)
 	 * @see android.widget.ArrayAdapter#getView(int, android.view.View, android.view.ViewGroup)
 	 */
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View view = null;
+		Log.i("View", "getting the view");
 		if (convertView == null) {
 			LayoutInflater inflator = ((Activity) context).getLayoutInflater();
 			view = inflator.inflate(R.layout.discoveredeventlistrow, null);

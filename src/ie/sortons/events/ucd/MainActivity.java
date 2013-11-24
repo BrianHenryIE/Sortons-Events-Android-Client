@@ -30,15 +30,15 @@ public class MainActivity extends Activity {
 	ProgressDialog dialog;
 	TextView txtMessage;
 	ListView eventslistview;
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
+		eventslistview =  (ListView) findViewById(R.id.events_list);
+		showList();
 		queryCloudEndpoint();
 
-		eventslistview = (ListView) findViewById(R.id.events_list);
+		
 
 	}
 
@@ -59,7 +59,7 @@ public class MainActivity extends Activity {
 			public void onPreExecute() {
 				txtMessage = (TextView) findViewById(R.id.result_text);
 				txtMessage.setText("Connecting....");
-				dialog = ProgressDialog.show(MainActivity.this, null /* title */, "Please wait...");
+				//dialog = ProgressDialog.show(MainActivity.this, null /* title */, "Please wait...");
 			}
 
 			@Override
@@ -115,14 +115,14 @@ public class MainActivity extends Activity {
 					}
 					dbTools.insertEvents(eventsToBeAdded);
 					dbTools.insertSourcePages(pagesToBeAdded);
-					//dbTools.deleteAllEventsBeforeDate(new Date());
+					dbTools.deleteAllEventsBeforeDate(new Date()); //TODO: delete everything instead before updating or change primary key
 				}
 				else {
 					Log.i("onPostExecute", "no data was returned");
 				}
 				showList();
 
-				dialog.dismiss();
+				//dialog.dismiss();
 			}
 		};
 
