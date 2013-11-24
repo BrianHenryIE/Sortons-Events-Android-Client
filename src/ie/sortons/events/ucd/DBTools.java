@@ -14,6 +14,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 public class DBTools extends SQLiteOpenHelper {
 	
@@ -31,7 +32,7 @@ public class DBTools extends SQLiteOpenHelper {
 		db.execSQL(q);
 		q = "CREATE TABLE sourcePages ( id INTEGER PRIMARY KEY AUTOINCREMENT," + 
 				"eventId INTEGER, pageId INTEGER, name TEXT," + 
-				"name TEXT, pageUrl TEXT )";
+				"pageUrl TEXT )";
 		db.execSQL(q);		
 	}
 
@@ -55,10 +56,10 @@ public class DBTools extends SQLiteOpenHelper {
 			vals.put("startTime", values.get(i).get("startTime"));
 			vals.put("latitude", values.get(i).get("latitude"));
 			vals.put("longitude", values.get(i).get("longitude"));
-			
+			Log.i("insertEvents", "added event");
 			db.insert("events", null, vals);
-			db.close();
 		}
+		db.close();
 	}
 	
 	public void insertSourcePages(List<HashMap<String, String>> values) {
@@ -68,11 +69,11 @@ public class DBTools extends SQLiteOpenHelper {
 			vals.put("eventId", values.get(i).get("eventId"));
 			vals.put("pageId", values.get(i).get("pageId"));
 			vals.put("name", values.get(i).get("name"));
-			vals.put("pageUrl", values.get(i).get("startTime"));
+			vals.put("pageUrl", values.get(i).get("pageUrl"));
 			
-			db.insert("events", null, vals);
-			db.close();
+			db.insert("sourcePages", null, vals);
 		}
+		db.close();
 	}
 	//should be called by deleteAllEventsBeforeDate
 	public void deleteEvents(List<String> eventId) {
@@ -91,7 +92,7 @@ public class DBTools extends SQLiteOpenHelper {
 		ArrayList<String> toDelete = new ArrayList<String>();
 		for (int i = 0; i < events.size(); i++) {
 			try {
-				Date date = new SimpleDateFormat("YYYY-MM-DD HH:MM:SS.SSS", Locale.ENGLISH).parse(events.get(i).get("startTimeDate"));
+				Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.ENGLISH).parse(events.get(i).get("startTimeDate"));
 				if (date.before(before)) {
 					toDelete.add(events.get(i).get("eventId"));
 				}
@@ -125,6 +126,7 @@ public class DBTools extends SQLiteOpenHelper {
 				eventList.add(module);
 			} while(cursor.moveToNext());
 		}
+		db.close();
 		return eventList;
 	}
 	
@@ -143,6 +145,7 @@ public class DBTools extends SQLiteOpenHelper {
 			event.put("latitude", cursor.getString(6));
 			event.put("longitude", cursor.getString(7));
 		}
+		db.close();
 		return event;
 	}
 	
@@ -165,7 +168,7 @@ public class DBTools extends SQLiteOpenHelper {
 				pageList.add(page);
 			}	while (cursor.moveToNext());
 		}
-		
+		db.close();
 		return pageList;
 	}
 }
