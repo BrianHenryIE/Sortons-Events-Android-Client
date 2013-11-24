@@ -22,11 +22,6 @@ import com.google.api.client.json.gson.GsonFactory;
 
 public class MainActivity extends Activity {
 
-
-
-
-	List<DiscoveredEvent> upcomingEvents;
-
 	ProgressDialog dialog;
 	TextView txtMessage;
 	ListView eventslistview;
@@ -53,7 +48,7 @@ public class MainActivity extends Activity {
 
 	private void queryCloudEndpoint() {
 
-		AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
+		AsyncTask<String, Void, List<DiscoveredEvent>> task = new AsyncTask<String, Void, List<DiscoveredEvent>>() {
 
 			@Override
 			public void onPreExecute() {
@@ -63,39 +58,38 @@ public class MainActivity extends Activity {
 			}
 
 			@Override
-			protected String doInBackground(Void... params) {
+			protected List<DiscoveredEvent> doInBackground(String... params) {
 				UpcomingEvents.Builder builder = new UpcomingEvents.Builder(
 						AndroidHttp.newCompatibleTransport(), new GsonFactory(), null /* httpRequestInitializer */);
 				try {
-					DiscoveredEventCollection pojo = builder.build().upcomingEventsEndpoint().getList("197528567092983").execute();
+					DiscoveredEventCollection pojo = builder.build().upcomingEventsEndpoint().getList(params[0]).execute();
 
 					Log.i("Asd", pojo.toPrettyString());
 					
-					upcomingEvents = pojo.getItems();
+					return pojo.getItems();
 
-					return null;
 				} catch (IOException e) {
 					Log.e("error:", e.toString());
-					return e.toString();
+					return null;
 				}
 			}
 
 			@Override
-			public void onPostExecute(String message) {
+			public void onPostExecute(List<DiscoveredEvent> data) {
 				txtMessage.setText("");
 				
-				Log.i("onPostExecute", "endpoint returned "+upcomingEvents.size());
+				Log.i("onPostExecute", "endpoint returned "+data.size());
 
-				showList();
+				showList(data);
 
 				dialog.dismiss();
 			}
 		};
 
-		task.execute();
+		task.execute("197528567092983");
 	}
 
-	private void showList(){	
+	private void showList(List<DiscoveredEvent> upcomingEvents){	
 		DiscoveredEventRowAdapter adapter = new DiscoveredEventRowAdapter(MainActivity.this, upcomingEvents);
 		eventslistview.setAdapter(adapter);
 
