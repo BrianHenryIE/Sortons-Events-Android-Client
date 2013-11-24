@@ -112,21 +112,20 @@ public class DBTools extends SQLiteOpenHelper {
 		if (cursor.moveToFirst()) {
 			
 			do{
-				HashMap<String, String> module = new HashMap<String, String>();
-				module.put("id", cursor.getString(0));
-				module.put("eventId", cursor.getString(1));
-				module.put("name", cursor.getString(2));
-				module.put("location", cursor.getString(3));
-				module.put("startTimeDate", cursor.getString(4));
-				module.put("startTime", cursor.getString(5));
-				module.put("latitude", cursor.getString(6));
-				module.put("longitude", cursor.getString(7));
+				HashMap<String, String> e = new HashMap<String, String>();
+				e.put("id", cursor.getString(0));
+				e.put("eventId", cursor.getString(1));
+				e.put("name", cursor.getString(2));
+				e.put("location", cursor.getString(3));
+				e.put("startTimeDate", cursor.getString(4));
+				e.put("startTime", cursor.getString(5));
+				e.put("latitude", cursor.getString(6));
+				e.put("longitude", cursor.getString(7));
 				
 				
-				eventList.add(module);
+				eventList.add(e);
 			} while(cursor.moveToNext());
 		}
-		db.close();
 		return eventList;
 	}
 	
