@@ -1,5 +1,6 @@
 package ie.sortons.events.ucd;
 
+import java.util.HashMap;
 import java.util.List;
 
 import android.app.Activity;
@@ -10,18 +11,20 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.util.Log;
 
 import com.appspot.sortonsevents.upcomingEvents.model.DiscoveredEvent;
 
 public class DiscoveredEventRowAdapter extends ArrayAdapter<DiscoveredEvent> {
-
+	DBTools dbTools;
 	private final Context context;
-	private final List<DiscoveredEvent> upcomingEvents;
-
-	public DiscoveredEventRowAdapter(Context context, List<DiscoveredEvent> upcomingEvents) {
-		super(context, R.layout.discoveredeventlistrow, upcomingEvents);
+	List<HashMap<String,String>> events;
+	public DiscoveredEventRowAdapter(Context context, List<HashMap<String,String>> events) {
+		super(context, R.layout.discoveredeventlistrow);
 		this.context = context;
-		this.upcomingEvents = upcomingEvents;
+		dbTools = new DBTools(context);
+		this.events = events;
+		Log.i("RowAdapterDBTools", "Discovered event Row Adapter constructed");
 	}
 
 	static class ViewHolder {
@@ -53,9 +56,9 @@ public class DiscoveredEventRowAdapter extends ArrayAdapter<DiscoveredEvent> {
 			view = convertView;
 		}
 		ViewHolder holder = (ViewHolder) view.getTag();
-		holder.name.setText(upcomingEvents.get(position).getFbEvent().getName());
-		holder.time.setText(upcomingEvents.get(position).getFbEvent().getStartTime());
-		holder.location.setText(upcomingEvents.get(position).getFbEvent().getLocation());
+		holder.name.setText(events.get(position).get("name"));
+		holder.time.setText(events.get(position).get("startTime"));
+		holder.location.setText(events.get(position).get("location"));
 		
 //		URL imageUrl = null;
 //		try {

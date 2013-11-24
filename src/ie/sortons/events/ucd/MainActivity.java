@@ -113,38 +113,45 @@ public class MainActivity extends FragmentActivity {
 			public void onPostExecute(List<DiscoveredEvent> data) {
 				txtMessage.setText("");
 
-				Log.i("onPostExecute", "endpoint returned "+data.size());
-				ArrayList<HashMap<String,String>> eventsToBeAdded = new ArrayList<HashMap<String,String>>();
-				ArrayList<HashMap<String,String>> pagesToBeAdded = new ArrayList<HashMap<String, String>>();
-				for (int i = 0; i < data.size(); i++) {
-					HashMap<String,String> entry = new HashMap<String,String>();
-					FbEvent e = data.get(i).getFbEvent();
-					String eventId = e.getEid();
-					entry.put("eventId", eventId);
-					entry.put("name",  e.getName());
-					entry.put("location", e.getLocation());
-					entry.put("startTimeDate", e.getStartTimeDate().toString());
-					entry.put("startTime", e.getStartTime());
-					entry.put("latitude", e.getLatitude().toString());
-					entry.put("longtitude", e.getLongitude().toString());
-
-					for(int j = 0; j < data.get(i).getSourcePages().size(); j++) {
-						FbPage p = data.get(i).getSourcePages().get(j);
-						HashMap<String, String> page = new HashMap<String, String>(); 
-						page.put("eventId", eventId);
-						page.put("pageId", p.getPageId());
-						page.put("name", p.getName());
-						page.put("pageUrl", p.getPageUrl());
-						pagesToBeAdded.add(page);
+				if (data != null) {
+					Log.i("onPostExecute", "endpoint returned "+data.size());
+					ArrayList<HashMap<String,String>> eventsToBeAdded = new ArrayList<HashMap<String,String>>();
+					ArrayList<HashMap<String,String>> pagesToBeAdded = new ArrayList<HashMap<String, String>>();
+					for (int i = 0; i < data.size(); i++) {
+						HashMap<String,String> entry = new HashMap<String,String>();
+						FbEvent e = data.get(i).getFbEvent();
+						String eventId = e.getEid();
+						entry.put("eventId", eventId);
+						entry.put("name",  e.getName());
+						entry.put("location", e.getLocation());
+						entry.put("startTimeDate", e.getStartTimeDate().toString());
+						entry.put("startTime", e.getStartTime());
+						if (e.getLatitude() != null) {
+							entry.put("latitude", e.getLatitude().toString());
+						}
+						if (e.getLongitude() != null) {
+							entry.put("longtitude", e.getLongitude().toString());
+						}
+						for(int j = 0; j < data.get(i).getSourcePages().size(); j++) {
+							FbPage p = data.get(i).getSourcePages().get(j);
+							HashMap<String, String> page = new HashMap<String, String>(); 
+							page.put("eventId", eventId);
+							page.put("pageId", p.getPageId());
+							page.put("name", p.getName());
+							page.put("pageUrl", p.getPageUrl());
+							pagesToBeAdded.add(page);
+						}
+						
+						eventsToBeAdded.add(entry);
 					}
-
-					eventsToBeAdded.add(entry);
+					dbTools.insertEvents(eventsToBeAdded);
+					dbTools.insertSourcePages(pagesToBeAdded);
+					//dbTools.deleteAllEventsBeforeDate(new Date());
 				}
-				dbTools.insertEvents(eventsToBeAdded);
-				dbTools.insertSourcePages(pagesToBeAdded);
-				dbTools.deleteAllEventsBeforeDate(new Date());
-
-				showList(data);
+				else {
+					Log.i("onPostExecute", "no data was returned");
+				}
+				showList();
 
 				dialog.dismiss();
 			}
@@ -153,8 +160,8 @@ public class MainActivity extends FragmentActivity {
 		task.execute("197528567092983");
 	}
 
-	private void showList(List<DiscoveredEvent> upcomingEvents){	
-		DiscoveredEventRowAdapter adapter = new DiscoveredEventRowAdapter(MainActivity.this, upcomingEvents);
+	private void showList(){	
+		DiscoveredEventRowAdapter adapter = new DiscoveredEventRowAdapter(MainActivity.this, dbTools.getEvents());
 		eventslistview.setAdapter(adapter);
 
 	}
