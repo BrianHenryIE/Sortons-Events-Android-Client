@@ -3,7 +3,6 @@
     <item
         android:id="@+id/query_cloudendpoint"
         android:orderInCategory="100"
-        android:showAsAction="never"
         android:title="Query Cloud End Point"/>
 
 </menu>

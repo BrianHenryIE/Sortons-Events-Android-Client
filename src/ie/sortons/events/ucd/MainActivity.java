@@ -2,6 +2,9 @@ package ie.sortons.events.ucd;
 
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import android.app.Activity;
@@ -16,12 +19,14 @@ import android.widget.TextView;
 import com.appspot.sortonsevents.upcomingEvents.UpcomingEvents;
 import com.appspot.sortonsevents.upcomingEvents.model.DiscoveredEvent;
 import com.appspot.sortonsevents.upcomingEvents.model.DiscoveredEventCollection;
+import com.appspot.sortonsevents.upcomingEvents.model.FbEvent;
+import com.appspot.sortonsevents.upcomingEvents.model.FbPage;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.json.gson.GsonFactory;
 
 
 public class MainActivity extends Activity {
-
+	DBTools dbTools = new DBTools(this);
 	ProgressDialog dialog;
 	TextView txtMessage;
 	ListView eventslistview;
@@ -79,7 +84,36 @@ public class MainActivity extends Activity {
 				txtMessage.setText("");
 				
 				Log.i("onPostExecute", "endpoint returned "+data.size());
-
+				ArrayList<HashMap<String,String>> eventsToBeAdded = new ArrayList<HashMap<String,String>>();
+				ArrayList<HashMap<String,String>> pagesToBeAdded = new ArrayList<HashMap<String, String>>();
+				for (int i = 0; i < data.size(); i++) {
+					HashMap<String,String> entry = new HashMap<String,String>();
+					FbEvent e = data.get(i).getFbEvent();
+					String eventId = e.getEid();
+					entry.put("eventId", eventId);
+					entry.put("name",  e.getName());
+					entry.put("location", e.getLocation());
+					entry.put("startTimeDate", e.getStartTimeDate().toString());
+					entry.put("startTime", e.getStartTime());
+					entry.put("latitude", e.getLatitude().toString());
+					entry.put("longtitude", e.getLongitude().toString());
+					
+					for(int j = 0; j < data.get(i).getSourcePages().size(); j++) {
+						FbPage p = data.get(i).getSourcePages().get(j);
+						HashMap<String, String> page = new HashMap<String, String>(); 
+						page.put("eventId", eventId);
+						page.put("pageId", p.getPageId());
+						page.put("name", p.getName());
+						page.put("pageUrl", p.getPageUrl());
+						pagesToBeAdded.add(page);
+					}
+					
+					eventsToBeAdded.add(entry);
+				}
+				dbTools.insertEvents(eventsToBeAdded);
+				dbTools.insertSourcePages(pagesToBeAdded);
+				dbTools.deleteAllEventsBeforeDate(new Date());
+				
 				showList(data);
 
 				dialog.dismiss();
