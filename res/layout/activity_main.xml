@@ -22,6 +22,7 @@
         android:layout_width="400dp"
         android:layout_height="600dp"
         android:layout_gravity="left"
-        android:layout_margin="25dp" />
+        android:layout_margin="25dp"
+        android:background="#95FFFFFF" />
 
 </FrameLayout>

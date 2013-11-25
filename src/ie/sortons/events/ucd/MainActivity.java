@@ -35,6 +35,7 @@ public class MainActivity extends FragmentActivity {
 	TextView txtMessage;
 	ListView eventslistview;
 
+
 	ViewGroup mapFrame; // (frame)
 	ViewGroup newsfeedFrame; // (frame)
 
@@ -89,16 +90,12 @@ public class MainActivity extends FragmentActivity {
 			// TODO maybe only when there is something to commit!
 			// Commit the transaction
 			fragmentTransaction.commit();
-			
-			
-		
-		
+
 		}
-
-		// queryCloudEndpoint();
-
-		eventslistview = (ListView) findViewById(R.id.events_list);
-
+		
+		eventslistview =  (ListView) findViewById(R.id.events_list);
+		showList();
+		queryCloudEndpoint();
 	}
 
 
@@ -117,8 +114,8 @@ public class MainActivity extends FragmentActivity {
 			@Override
 			public void onPreExecute() {
 				
-				txtMessage.setText("Connecting....");
-				dialog = ProgressDialog.show(MainActivity.this, null /* title */, "Please wait...");
+				// txtMessage.setText("Connecting....");
+				//dialog = ProgressDialog.show(MainActivity.this, null /* title */, "Please wait...");
 			}
 
 			@Override
@@ -140,7 +137,7 @@ public class MainActivity extends FragmentActivity {
 
 			@Override
 			public void onPostExecute(List<DiscoveredEvent> data) {
-				txtMessage.setText("");
+				// txtMessage.setText("");
 
 				if (data != null) {
 					Log.i("onPostExecute", "endpoint returned "+data.size());
@@ -175,14 +172,14 @@ public class MainActivity extends FragmentActivity {
 					}
 					dbTools.insertEvents(eventsToBeAdded);
 					dbTools.insertSourcePages(pagesToBeAdded);
-					//dbTools.deleteAllEventsBeforeDate(new Date());
+					dbTools.deleteAllEventsBeforeDate(new Date()); //TODO: delete everything instead before updating or change primary key
 				}
 				else {
 					Log.i("onPostExecute", "no data was returned");
 				}
 				showList();
 
-				dialog.dismiss();
+				//dialog.dismiss();
 			}
 		};
 
