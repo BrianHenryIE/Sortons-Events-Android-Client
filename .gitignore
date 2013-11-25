@@ -31,3 +31,6 @@ dependencies/
 *.ipr
 *.iws
 .idea/
+
+
+upcomingEvents/
