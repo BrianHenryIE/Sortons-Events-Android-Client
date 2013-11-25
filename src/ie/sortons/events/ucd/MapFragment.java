@@ -26,7 +26,7 @@ public class MapFragment extends Fragment {
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.activity_map, container, false);
+		View view = inflater.inflate(R.layout.fragment_map, container, false);
 		Log.i("map fragment", "onCreateView");
 
 		try {
@@ -45,12 +45,12 @@ public class MapFragment extends Fragment {
 		// GoogleMap map = ((SupportMapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
 		GoogleMap map = ((SupportMapFragment) myFM.findFragmentById(R.id.map)).getMap();
 		
+		map.getUiSettings().setZoomControlsEnabled(false);
+		map.getUiSettings().setMyLocationButtonEnabled(false);
 		
 		LatLng home = new LatLng(53.307775, -6.219453);
 
-
-		map.setMyLocationEnabled(true);
-		map.moveCamera(CameraUpdateFactory.newLatLngZoom(home, 15));
+		map.moveCamera(CameraUpdateFactory.newLatLngZoom(home, 14));
 
 		LatLng sydney = new LatLng(-33.867, 151.206);
 		map.addMarker(new MarkerOptions().title("Sydney").snippet("The most populous city in Australia.").position(sydney));

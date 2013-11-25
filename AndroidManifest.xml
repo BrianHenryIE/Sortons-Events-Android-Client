@@ -86,6 +86,10 @@
             android:name="ie.sortons.events.ucd.NewsfeedFragment"
             android:label="@string/title_activity_newsfeed_fragment" >
         </activity>
+        <activity
+            android:name="ie.sortons.events.ucd.EventslistFragment"
+            android:label="@string/title_activity_eventslist_fragment" >
+        </activity>
     </application>
 
 </manifest>

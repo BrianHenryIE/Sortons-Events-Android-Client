@@ -7,7 +7,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -24,21 +23,26 @@ import com.appspot.sortonsevents.upcomingEvents.model.DiscoveredEvent;
 import com.appspot.sortonsevents.upcomingEvents.model.DiscoveredEventCollection;
 import com.appspot.sortonsevents.upcomingEvents.model.FbEvent;
 import com.appspot.sortonsevents.upcomingEvents.model.FbPage;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.json.gson.GsonFactory;
 
 
+
 public class MainActivity extends FragmentActivity {
+
+	private String clientId = "197528567092983";
+
 	DBTools dbTools = new DBTools(this);
 	ProgressDialog dialog;
 	TextView txtMessage;
-	ListView eventslistview;
-
+	
 
 	ViewGroup mapFrame; // (frame)
+	ViewGroup eventslistFrame; // (frame)
 	ViewGroup newsfeedFrame; // (frame)
 
+	EventslistFragment eventslistFragment;
+	
 	/* (non-Javadoc)
 	 * @see android.support.v4.app.FragmentActivity#onCreate(android.os.Bundle)
 	 */
@@ -48,7 +52,7 @@ public class MainActivity extends FragmentActivity {
 		setContentView(R.layout.activity_main);
 
 		FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-		
+
 		// Restore state
 		if (savedInstanceState != null) {
 			// The fragment manager will handle restoring them if we are being
@@ -57,8 +61,24 @@ public class MainActivity extends FragmentActivity {
 		} else {
 
 			// If this is the first creation of the activity, add fragments to it
-			
+
 			Log.i("mainactivity", "savedInstanceState==null");
+
+			// If our layout has a container for the image selector fragment,
+			// create and add it
+			eventslistFrame = (ViewGroup) findViewById(R.id.eventslist_frame);
+			if (eventslistFrame != null) {
+				Log.i("oncreate", "onCreate: adding EventslistFragment to MainActivity");
+
+				// Add map fragment to the activity's container layout
+				eventslistFragment = new EventslistFragment();
+				
+
+				fragmentTransaction.replace(eventslistFrame.getId(), eventslistFragment, EventslistFragment.class.getName());
+
+				eventslistFragment.setList(dbTools.getEvents());
+			}
+			
 			
 			// If our layout has a container for the image selector fragment,
 			// create and add it
@@ -69,10 +89,12 @@ public class MainActivity extends FragmentActivity {
 				// Add map fragment to the activity's container layout
 				MapFragment mapFragment = new MapFragment();
 				mapFragment.setArguments(this);
-				
+
 				fragmentTransaction.replace(mapFrame.getId(), mapFragment, MapFragment.class.getName());
-				
+
 			}
+
+			
 			
 			newsfeedFrame = (ViewGroup) findViewById(R.id.newsfeed_frame);
 			if (mapFrame != null) {
@@ -81,11 +103,11 @@ public class MainActivity extends FragmentActivity {
 				// Add map fragment to the activity's container layout
 				NewsfeedFragment newsfeedFragment = new NewsfeedFragment();
 				newsfeedFragment.setArguments(this);
-				
+
 				fragmentTransaction.replace(newsfeedFrame.getId(), newsfeedFragment, NewsfeedFragment.class.getName());
-				
+
 				fragmentTransaction.replace(newsfeedFrame.getId(), newsfeedFragment, NewsfeedFragment.class.getName());
-				
+
 			}
 			// TODO maybe only when there is something to commit!
 			// Commit the transaction
@@ -93,8 +115,7 @@ public class MainActivity extends FragmentActivity {
 
 		}
 		
-		eventslistview =  (ListView) findViewById(R.id.events_list);
-		showList();
+				
 		queryCloudEndpoint();
 	}
 
@@ -113,7 +134,7 @@ public class MainActivity extends FragmentActivity {
 
 			@Override
 			public void onPreExecute() {
-				
+
 				// txtMessage.setText("Connecting....");
 				//dialog = ProgressDialog.show(MainActivity.this, null /* title */, "Please wait...");
 			}
@@ -167,7 +188,7 @@ public class MainActivity extends FragmentActivity {
 							page.put("pageUrl", p.getPageUrl());
 							pagesToBeAdded.add(page);
 						}
-						
+
 						eventsToBeAdded.add(entry);
 					}
 					dbTools.insertEvents(eventsToBeAdded);
@@ -177,20 +198,20 @@ public class MainActivity extends FragmentActivity {
 				else {
 					Log.i("onPostExecute", "no data was returned");
 				}
-				showList();
+				
+				if ( eventslistFragment != null ) {
+					
+					eventslistFragment.setList(dbTools.getEvents());
+					
+				}
+					
 
 				//dialog.dismiss();
 			}
 		};
 
-		task.execute("197528567092983");
+		task.execute(clientId);
 	}
 
-	private void showList(){	
-		Log.i("dbTools.getEvents().size()", Integer.toString(dbTools.getEvents().size()));
-		DiscoveredEventRowAdapter adapter = new DiscoveredEventRowAdapter(MainActivity.this, dbTools.getEvents());
-		eventslistview.setAdapter(adapter);
-
-	}
 
 }

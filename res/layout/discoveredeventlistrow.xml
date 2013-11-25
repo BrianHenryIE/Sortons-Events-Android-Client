@@ -1,54 +1,60 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="?android:attr/listPreferredItemHeight"
-    android:padding="6dip" >
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="?android:attr/listPreferredItemHeight" >
 
-    <ImageView
-        android:id="@+id/eventpicture"
-        android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
-        android:layout_alignParentBottom="false"
-        android:layout_alignParentTop="true"
-        android:layout_marginRight="6dip"
-        android:contentDescription="TODO"
-        android:src="@drawable/ic_launcher" />
-
-    
-    <TextView
-        android:id="@+id/eventrowname"
+    <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:layout_alignWithParentIfMissing="true"
-        android:layout_toRightOf="@id/eventpicture"
-        android:gravity="center_vertical"
-        android:text="Event name error"
-        android:textSize="16sp" />
+        android:layout_margin="10dp"
+        android:background="#FFFFFF"
+        android:padding="6dip" >
 
-    <TextView
-        android:id="@+id/eventrowtime"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_below="@id/eventrowname"
-        android:layout_centerHorizontal="false"
-        android:layout_toRightOf="@id/eventpicture"
-        android:ellipsize="marquee"
-        android:singleLine="true"
-        android:text="Event time error"
-        android:textSize="12sp" />
+        <ImageView
+            android:id="@+id/eventpicture"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_alignParentBottom="false"
+            android:layout_alignParentTop="true"
+            android:layout_marginRight="6dip"
+            android:contentDescription="TODO"
+            android:src="@drawable/ic_launcher" />
 
-    <TextView
-        android:id="@+id/eventrowlocation"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_below="@+id/eventrowtime"
-        android:layout_toRightOf="@id/eventpicture"
-        android:ellipsize="marquee"
-        android:singleLine="true"
-        android:text="Event location error"
-        android:textSize="12sp" />
+        <TextView
+            android:id="@+id/eventrowname"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignWithParentIfMissing="true"
+            android:layout_toRightOf="@id/eventpicture"
+            android:gravity="center_vertical"
+            android:text="Event name error"
+            android:textSize="16sp" />
 
-</RelativeLayout>
+        <TextView
+            android:id="@+id/eventrowtime"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/eventrowname"
+            android:layout_centerHorizontal="false"
+            android:layout_toRightOf="@id/eventpicture"
+            android:ellipsize="marquee"
+            android:singleLine="true"
+            android:text="Event time error"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/eventrowlocation"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/eventrowtime"
+            android:layout_toRightOf="@id/eventpicture"
+            android:ellipsize="marquee"
+            android:singleLine="true"
+            android:text="Event location error"
+            android:textSize="12sp" />
+    </RelativeLayout>
+
+</FrameLayout>

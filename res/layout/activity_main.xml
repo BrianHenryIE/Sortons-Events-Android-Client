@@ -7,22 +7,22 @@
 
     <FrameLayout
         android:id="@+id/map_frame"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent" />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <FrameLayout
+        android:id="@+id/eventslist_frame"
+        android:layout_width="400dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="left"
+        android:background="#90FFFFFF"  />
 
     <FrameLayout
         android:id="@+id/newsfeed_frame"
-        android:layout_width="600dp"
-        android:layout_height="600dp"
-        android:layout_gravity="right|center_vertical"
-/>
-
-    <ListView
-        android:id="@+id/events_list"
         android:layout_width="400dp"
-        android:layout_height="600dp"
-        android:layout_gravity="left"
-        android:layout_margin="25dp"
-        android:background="#95FFFFFF" />
+        android:layout_height="match_parent"
+        android:layout_gravity="right"
+         />
+
 
 </FrameLayout>
