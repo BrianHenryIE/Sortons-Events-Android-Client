@@ -1,28 +1,27 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="fill_parent"
-    tools:context=".MainActivity" >
+    tools:context=".MainActivity"
+    android:id="@+id/main_activity_body" >
 
-    <TextView
-        android:id="@+id/result_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/hello_world" />
-    
-     <FrameLayout
-                android:id="@+id/map_frame"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
+    <FrameLayout
+        android:id="@+id/map_frame"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" />
+
+    <FrameLayout
+        android:id="@+id/newsfeed_frame"
+        android:layout_width="600dp"
+        android:layout_height="600dp"
+        android:layout_gravity="right|center_vertical"
+/>
 
     <ListView
         android:id="@+id/events_list"
-        android:layout_width="match_parent"
-        android:layout_height="fill_parent"
-        android:layout_centerHorizontal="true"
-        android:layout_centerInParent="false" >
+        android:layout_width="400dp"
+        android:layout_height="600dp"
+        android:layout_gravity="left"
+        android:layout_margin="25dp" />
 
-    </ListView>
-
-</RelativeLayout>
+</FrameLayout>

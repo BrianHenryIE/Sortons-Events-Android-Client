@@ -1,4 +1,4 @@
-package ie.sortons.events.ucd;
+	package ie.sortons.events.ucd;
 
 import java.util.HashMap;
 import java.util.List;
@@ -55,6 +55,7 @@ public class DiscoveredEventRowAdapter extends ArrayAdapter<DiscoveredEvent> {
 		} else {
 			view = convertView;
 		}
+		Log.i("building list " + position + " name", events.get(position).get("name"));
 		ViewHolder holder = (ViewHolder) view.getTag();
 		holder.name.setText(events.get(position).get("name"));
 		holder.time.setText(events.get(position).get("startTime"));

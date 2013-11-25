@@ -8,7 +8,21 @@
         android:minSdkVersion="10"
         android:targetSdkVersion="19" />
 
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true" />
+
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
+    <!--
+     The following two permissions are not required to use
+     Google Maps Android API v2, but are recommended.
+    -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <permission
         android:name="ie.sortons.events.ucd.permission.C2D_MESSAGE"
@@ -59,6 +73,18 @@
         <activity
             android:name="ie.sortons.events.ucd.MapFragment"
             android:label="@string/title_activity_map" >
+        </activity>
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+        <meta-data
+            android:name="com.google.android.maps.v2.API_KEY"
+            android:value="AIzaSyBK1Y1CJtIC6rIgM1RPS0tm5PXbpIuq7Uk" />
+
+        <activity
+            android:name="ie.sortons.events.ucd.NewsfeedFragment"
+            android:label="@string/title_activity_newsfeed_fragment" >
         </activity>
     </application>
 

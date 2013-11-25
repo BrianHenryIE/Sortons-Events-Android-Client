@@ -24,6 +24,7 @@ import com.appspot.sortonsevents.upcomingEvents.model.DiscoveredEvent;
 import com.appspot.sortonsevents.upcomingEvents.model.DiscoveredEventCollection;
 import com.appspot.sortonsevents.upcomingEvents.model.FbEvent;
 import com.appspot.sortonsevents.upcomingEvents.model.FbPage;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.json.gson.GsonFactory;
 
@@ -35,40 +36,68 @@ public class MainActivity extends FragmentActivity {
 	ListView eventslistview;
 
 	ViewGroup mapFrame; // (frame)
+	ViewGroup newsfeedFrame; // (frame)
 
+	/* (non-Javadoc)
+	 * @see android.support.v4.app.FragmentActivity#onCreate(android.os.Bundle)
+	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		queryCloudEndpoint();
-
-		eventslistview = (ListView) findViewById(R.id.events_list);
-
-
+		FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+		
 		// Restore state
 		if (savedInstanceState != null) {
 			// The fragment manager will handle restoring them if we are being
 			// restored from a saved state
-		}
-		// If this is the first creation of the activity, add fragments to it
-		else {
+			Log.i("mainactivity", "savedInstanceState!=null");
+		} else {
 
+			// If this is the first creation of the activity, add fragments to it
+			
+			Log.i("mainactivity", "savedInstanceState==null");
+			
 			// If our layout has a container for the image selector fragment,
 			// create and add it
 			mapFrame = (ViewGroup) findViewById(R.id.map_frame);
 			if (mapFrame != null) {
-				Log.i("oncreate", "onCreate: adding ImageSelectorFragment to MainActivity");
+				Log.i("oncreate", "onCreate: adding MapFragment to MainActivity");
 
-				// Add image selector fragment to the activity's container layout
+				// Add map fragment to the activity's container layout
 				MapFragment mapFragment = new MapFragment();
-				FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+				mapFragment.setArguments(this);
+				
 				fragmentTransaction.replace(mapFrame.getId(), mapFragment, MapFragment.class.getName());
-
-				// Commit the transaction
-				fragmentTransaction.commit();
+				
 			}
+			
+			newsfeedFrame = (ViewGroup) findViewById(R.id.newsfeed_frame);
+			if (mapFrame != null) {
+				Log.i("oncreate", "onCreate: adding NewsfeedFragment to MainActivity");
+
+				// Add map fragment to the activity's container layout
+				NewsfeedFragment newsfeedFragment = new NewsfeedFragment();
+				newsfeedFragment.setArguments(this);
+				
+				fragmentTransaction.replace(newsfeedFrame.getId(), newsfeedFragment, NewsfeedFragment.class.getName());
+				
+				fragmentTransaction.replace(newsfeedFrame.getId(), newsfeedFragment, NewsfeedFragment.class.getName());
+				
+			}
+			// TODO maybe only when there is something to commit!
+			// Commit the transaction
+			fragmentTransaction.commit();
+			
+			
+		
+		
 		}
+
+		// queryCloudEndpoint();
+
+		eventslistview = (ListView) findViewById(R.id.events_list);
 
 	}
 
@@ -87,7 +116,7 @@ public class MainActivity extends FragmentActivity {
 
 			@Override
 			public void onPreExecute() {
-				txtMessage = (TextView) findViewById(R.id.result_text);
+				
 				txtMessage.setText("Connecting....");
 				dialog = ProgressDialog.show(MainActivity.this, null /* title */, "Please wait...");
 			}
@@ -161,6 +190,7 @@ public class MainActivity extends FragmentActivity {
 	}
 
 	private void showList(){	
+		Log.i("dbTools.getEvents().size()", Integer.toString(dbTools.getEvents().size()));
 		DiscoveredEventRowAdapter adapter = new DiscoveredEventRowAdapter(MainActivity.this, dbTools.getEvents());
 		eventslistview.setAdapter(adapter);
 
