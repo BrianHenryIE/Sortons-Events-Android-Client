@@ -33,6 +33,7 @@ public class DiscoveredEventRowAdapter extends ArrayAdapter<DiscoveredEvent> {
 		protected TextView time;
 		protected TextView location;
 		protected ImageView picture;
+		protected TextView eventId;
 	}
 
 
@@ -55,6 +56,7 @@ public class DiscoveredEventRowAdapter extends ArrayAdapter<DiscoveredEvent> {
 			viewHolder.time = (TextView) view.findViewById(R.id.eventrowtime);
 			viewHolder.location = (TextView) view.findViewById(R.id.eventrowlocation);
 			viewHolder.picture = (ImageView) view.findViewById(R.id.eventpicture);
+			viewHolder.eventId = (TextView) view.findViewById(R.id.eventid);
 			view.setTag(viewHolder);
 			
 		} else {
@@ -65,6 +67,7 @@ public class DiscoveredEventRowAdapter extends ArrayAdapter<DiscoveredEvent> {
 		holder.name.setText(events.get(position).get("name"));
 		holder.time.setText(events.get(position).get("startTime"));
 		holder.location.setText(events.get(position).get("location"));
+		holder.eventId.setText(events.get(position).get("eventId"));
 		
 //		URL imageUrl = null;
 //		try {
