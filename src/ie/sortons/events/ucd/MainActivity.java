@@ -42,6 +42,7 @@ public class MainActivity extends FragmentActivity {
 	ViewGroup newsfeedFrame; // (frame)
 
 	EventslistFragment eventslistFragment;
+	MapFragment mapFragment; 
 	
 	/* (non-Javadoc)
 	 * @see android.support.v4.app.FragmentActivity#onCreate(android.os.Bundle)
@@ -57,12 +58,9 @@ public class MainActivity extends FragmentActivity {
 		if (savedInstanceState != null) {
 			// The fragment manager will handle restoring them if we are being
 			// restored from a saved state
-			Log.i("mainactivity", "savedInstanceState!=null");
+			
 		} else {
-
 			// If this is the first creation of the activity, add fragments to it
-
-			Log.i("mainactivity", "savedInstanceState==null");
 
 			// If our layout has a container for the image selector fragment,
 			// create and add it
@@ -87,7 +85,7 @@ public class MainActivity extends FragmentActivity {
 				Log.i("oncreate", "onCreate: adding MapFragment to MainActivity");
 
 				// Add map fragment to the activity's container layout
-				MapFragment mapFragment = new MapFragment();
+				mapFragment = new MapFragment();
 				mapFragment.setArguments(this);
 
 				fragmentTransaction.replace(mapFrame.getId(), mapFragment, MapFragment.class.getName());
@@ -146,8 +144,6 @@ public class MainActivity extends FragmentActivity {
 				try {
 					DiscoveredEventCollection pojo = builder.build().upcomingEventsEndpoint().getList(params[0]).execute();
 
-					Log.i("Asd", pojo.toPrettyString());
-
 					return pojo.getItems();
 
 				} catch (IOException e) {
@@ -177,7 +173,7 @@ public class MainActivity extends FragmentActivity {
 							entry.put("latitude", e.getLatitude().toString());
 						}
 						if (e.getLongitude() != null) {
-							entry.put("longtitude", e.getLongitude().toString());
+							entry.put("longitude", e.getLongitude().toString());
 						}
 						for(int j = 0; j < data.get(i).getSourcePages().size(); j++) {
 							FbPage p = data.get(i).getSourcePages().get(j);
@@ -199,13 +195,13 @@ public class MainActivity extends FragmentActivity {
 					Log.i("onPostExecute", "no data was returned");
 				}
 				
-				if ( eventslistFragment != null ) {
-					
+				if ( eventslistFragment != null )					
 					eventslistFragment.setList(dbTools.getEvents());
 					
-				}
+				if ( mapFragment != null )					
+					mapFragment.setList(dbTools.getEvents());
 					
-
+				
 				//dialog.dismiss();
 			}
 		};

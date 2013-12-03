@@ -20,9 +20,7 @@ public class EventslistFragment extends ListFragment implements OnItemClickListe
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		DiscoveredEventRowAdapter adapter = new DiscoveredEventRowAdapter(inflater.getContext(), events);
 		setListAdapter(adapter);
-		
-		
-		
+	
 		return super.onCreateView(inflater, container, savedInstanceState);
 	}
 
@@ -35,9 +33,7 @@ public class EventslistFragment extends ListFragment implements OnItemClickListe
 
 	@Override
 	public void onItemClick(AdapterView adapter, View view, int position, long id) {
-
 		Toast.makeText(getActivity().getBaseContext(), "Item clicked: " + position, Toast.LENGTH_LONG).show();
-
 	}
 	
 	

@@ -14,7 +14,8 @@ import android.webkit.WebView;
 @SuppressLint("SetJavaScriptEnabled")
 public class NewsfeedFragment extends Fragment {
 
-	Context context; 
+	Context context;
+
 	public void setArguments(Context context){
 		this.context = context;
 	}
