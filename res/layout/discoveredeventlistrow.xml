@@ -55,6 +55,13 @@
             android:singleLine="true"
             android:text="Event location error"
             android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/eventid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+
     </RelativeLayout>
 
 </FrameLayout>

@@ -27,7 +27,6 @@ import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.json.gson.GsonFactory;
 
 
-
 public class MainActivity extends FragmentActivity {
 
 	private String clientId = "197528567092983";
@@ -67,43 +66,27 @@ public class MainActivity extends FragmentActivity {
 			eventslistFrame = (ViewGroup) findViewById(R.id.eventslist_frame);
 			if (eventslistFrame != null) {
 				Log.i("oncreate", "onCreate: adding EventslistFragment to MainActivity");
-
 				// Add map fragment to the activity's container layout
 				eventslistFragment = new EventslistFragment();
-				
-
 				fragmentTransaction.replace(eventslistFrame.getId(), eventslistFragment, EventslistFragment.class.getName());
-
 				eventslistFragment.setList(dbTools.getEvents());
 			}
-			
-			
+						
 			// If our layout has a container for the image selector fragment,
 			// create and add it
 			mapFrame = (ViewGroup) findViewById(R.id.map_frame);
 			if (mapFrame != null) {
 				Log.i("oncreate", "onCreate: adding MapFragment to MainActivity");
-
-				// Add map fragment to the activity's container layout
 				mapFragment = new MapFragment();
-				mapFragment.setArguments(this);
-
 				fragmentTransaction.replace(mapFrame.getId(), mapFragment, MapFragment.class.getName());
 
 			}
 
-			
-			
 			newsfeedFrame = (ViewGroup) findViewById(R.id.newsfeed_frame);
 			if (mapFrame != null) {
 				Log.i("oncreate", "onCreate: adding NewsfeedFragment to MainActivity");
-
 				// Add map fragment to the activity's container layout
 				NewsfeedFragment newsfeedFragment = new NewsfeedFragment();
-				newsfeedFragment.setArguments(this);
-
-				fragmentTransaction.replace(newsfeedFrame.getId(), newsfeedFragment, NewsfeedFragment.class.getName());
-
 				fragmentTransaction.replace(newsfeedFrame.getId(), newsfeedFragment, NewsfeedFragment.class.getName());
 
 			}

@@ -14,11 +14,6 @@ import android.webkit.WebView;
 @SuppressLint("SetJavaScriptEnabled")
 public class NewsfeedFragment extends Fragment {
 
-	Context context;
-
-	public void setArguments(Context context){
-		this.context = context;
-	}
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

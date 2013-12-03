@@ -3,8 +3,6 @@ package ie.sortons.events.ucd;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -22,11 +20,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapFragment extends Fragment {
-
-	Context context; 
-	public void setArguments(Context context){
-		this.context = context;
-	}
 	
 	GoogleMap map;
 	private ArrayList<HashMap<String, String>> events;
@@ -37,7 +30,7 @@ public class MapFragment extends Fragment {
 		Log.i("map fragment", "onCreateView");
 
 		try {
-		    MapsInitializer.initialize(context);
+		    MapsInitializer.initialize(inflater.getContext());
 		} catch (GooglePlayServicesNotAvailableException e) {
 		    Log.e("map", " " + e.getMessage());
 		}
@@ -57,6 +50,8 @@ public class MapFragment extends Fragment {
 		map.getUiSettings().setZoomControlsEnabled(false);
 		map.getUiSettings().setMyLocationButtonEnabled(false);
 		
+		// TODO
+		// Move to config
 		LatLng home = new LatLng(53.307775, -6.219453);
 
 		map.moveCamera(CameraUpdateFactory.newLatLngZoom(home, 14));
@@ -72,21 +67,17 @@ public class MapFragment extends Fragment {
 		showEvents();
 	}
 
+	
 	public void showEvents(){
-		Log.i("mapFragment, showEvents()", "count: " + (events == null ? "null" : events.size()) );
-		if ( events != null ) {
+		
+		if ( events != null ) 
 			for( HashMap<String, String> event : events ) {
-				Log.i("mapFragment", events.toString());
-				if( event.keySet().contains("latitude") && event.keySet().contains("longtitude") ) {
-					Log.i(event.get("latitude"), event.get("longtitude"));
-					LatLng eventPin = new LatLng(Long.parseLong(event.get("latitude")), Long.parseLong(event.get("longtitude")) );
-	                map.addMarker(new MarkerOptions().title(event.get("name")).snippet(event.get("location")).position(eventPin));
-	                	
+				if( event.keySet().contains("latitude") && event.get("latitude") != null && event.keySet().contains("longitude") && event.get("longitude") != null ) {
+					LatLng eventPin = new LatLng(Double.parseDouble(event.get("latitude")), Double.parseDouble(event.get("longitude")) );
+					map.addMarker(new MarkerOptions().title(event.get("name")).snippet(event.get("location")).position(eventPin));
 				}
-				
 			}
-		}
-			// for ( event)
+				
 	}
 	
 }
