@@ -71,6 +71,9 @@ public class DBTools extends SQLiteOpenHelper {
 			vals.put("startTime", values.get(i).get("startTime"));
 			vals.put("latitude", values.get(i).get("latitude"));
 			vals.put("longitude", values.get(i).get("longitude"));
+			if (values.get(i).containsKey("picUrl")) {
+				vals.put("picUrl", values.get(i).get("picUrl"));
+			}
 			Log.i("insertEvents", "added event");
 			db.insert("events", null, vals);
 		}
