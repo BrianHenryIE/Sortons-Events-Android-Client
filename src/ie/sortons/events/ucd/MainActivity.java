@@ -167,9 +167,8 @@ public class MainActivity extends FragmentActivity {
 
 						eventsToBeAdded.add(entry);
 					}
-					dbTools.insertEvents(eventsToBeAdded);
 					dbTools.insertSourcePages(pagesToBeAdded);
-					dbTools.deleteAllEventsBeforeDate(new Date()); //TODO: delete everything instead before updating or change primary key
+					dbTools.updateEvents(eventsToBeAdded);
 				}
 				else {
 					Log.i("onPostExecute", "no data was returned");

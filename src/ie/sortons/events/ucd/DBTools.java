@@ -32,7 +32,7 @@ public class DBTools extends SQLiteOpenHelper {
 				   "startTimeDate TEXT, startTime TEXT, latitude REAL," +
 				   "longitude REAL, picUrl TEXT )";
 		db.execSQL(q);
-		q = "CREATE TABLE sourcePages ( id INTEGER PRIMARY KEY AUTOINCREMENT," + 
+		q = "CREATE TABLE sourcePages ( " + 
 				"eventId INTEGER, pageId INTEGER, name TEXT," + 
 				"pageUrl TEXT )";
 		db.execSQL(q);		
