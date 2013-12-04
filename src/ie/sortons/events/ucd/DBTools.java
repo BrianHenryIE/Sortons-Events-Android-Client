@@ -44,6 +44,21 @@ public class DBTools extends SQLiteOpenHelper {
 		db.execSQL(q);
 		onCreate(db);
 	}
+	public void addUrlForEvent(String eventId, String url) {
+		String q = "SELECT * FROM events where eventId='" + eventId + "'";
+		SQLiteDatabase db = this.getWritableDatabase();
+		Cursor cursor = db.rawQuery(q, null);
+		if (cursor.moveToFirst()) {
+			ContentValues values = new ContentValues();
+			values.put("picUrl", url);
+			int rowsUpdated = db.update("events", values, "eventId=" + eventId, null);
+			if (rowsUpdated != 1) {
+				Log.e("adding url", "Adding a url for event with id: " + eventId + "updated " + rowsUpdated + "rows");
+			}
+		}
+		db.close();
+	}
+	
 	
 	public void insertEvents(List<HashMap<String, String>> values) {
 		SQLiteDatabase db = this.getWritableDatabase();
@@ -121,6 +136,7 @@ public class DBTools extends SQLiteOpenHelper {
 				e.put("startTime", cursor.getString(5));
 				e.put("latitude", cursor.getString(6));
 				e.put("longitude", cursor.getString(7));
+				e.put("picUrl", cursor.getString(8));
 				
 				
 				eventList.add(e);
@@ -143,6 +159,7 @@ public class DBTools extends SQLiteOpenHelper {
 			event.put("startTime", cursor.getString(5));
 			event.put("latitude", cursor.getString(6));
 			event.put("longitude", cursor.getString(7));
+			event.put("picURL", cursor.getString(8));
 		}
 		db.close();
 		return event;
