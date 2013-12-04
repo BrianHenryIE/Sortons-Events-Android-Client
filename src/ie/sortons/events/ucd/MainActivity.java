@@ -2,6 +2,7 @@ package ie.sortons.events.ucd;
 
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -215,6 +216,7 @@ public class MainActivity extends FragmentActivity {
 			Boolean imageUpdated = false;
 
 			try {
+				Log.i("GetPicture", params[0]);
 				URL url = new URL ( "https://graph.facebook.com/" + params[0] + "/picture?type=square" );
 				HttpURLConnection connection =  (HttpURLConnection) url.openConnection();
 
@@ -224,24 +226,28 @@ public class MainActivity extends FragmentActivity {
 				
 				// TBH I don't know if it's pulled the whole thing down from the server at this point.
 				
-				if( connection.getURL().toString() != dbTools.getEventInfo(params[0]).get("picUrl") ) {
+				// TODO: uncomment when the db side is done
+				// if( connection.getURL().toString() != dbTools.getEventInfo(params[0]).get("picUrl") ) {
 					imageUpdated = true;
 					
 					InputStream in = connection.getInputStream();
-					Bitmap jpeg = BitmapFactory.decodeStream(in);
+					Bitmap newImage = BitmapFactory.decodeStream(in);
 					
 
 					File saveImage;
 					try {
-				        String fileName = params[0];
-				        saveImage = File.createTempFile( fileName, null, MainActivity.this.getCacheDir() );
+				        saveImage = new File(MainActivity.this.getCacheDir(), params[0]);
+				        FileOutputStream fOut = new FileOutputStream(saveImage);
+				        newImage.compress(Bitmap.CompressFormat.JPEG, 85, fOut);
+				        fOut.flush();
+				        fOut.close();
 					}
 				    catch (IOException e) {
 				        // Error while creating file
 				    }
 				    
 					// TODO update the database with the new 
-				}
+				//}
 				
 				
 			} catch (MalformedURLException e) {
