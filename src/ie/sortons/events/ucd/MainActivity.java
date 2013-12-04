@@ -1,13 +1,20 @@
 package ie.sortons.events.ucd;
 
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
 import android.app.ProgressDialog;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -15,7 +22,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.Menu;
 import android.view.ViewGroup;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.appspot.sortonsevents.upcomingEvents.UpcomingEvents;
@@ -34,7 +40,7 @@ public class MainActivity extends FragmentActivity {
 	DBTools dbTools = new DBTools(this);
 	ProgressDialog dialog;
 	TextView txtMessage;
-	
+
 
 	ViewGroup mapFrame; // (frame)
 	ViewGroup eventslistFrame; // (frame)
@@ -42,7 +48,7 @@ public class MainActivity extends FragmentActivity {
 
 	EventslistFragment eventslistFragment;
 	MapFragment mapFragment; 
-	
+
 	/* (non-Javadoc)
 	 * @see android.support.v4.app.FragmentActivity#onCreate(android.os.Bundle)
 	 */
@@ -57,47 +63,38 @@ public class MainActivity extends FragmentActivity {
 		if (savedInstanceState != null) {
 			// The fragment manager will handle restoring them if we are being
 			// restored from a saved state
-			
+
 		} else {
 			// If this is the first creation of the activity, add fragments to it
+			// If our layout has a container for the events list... fragment, create and add it
 
-			// If our layout has a container for the image selector fragment,
-			// create and add it
 			eventslistFrame = (ViewGroup) findViewById(R.id.eventslist_frame);
 			if (eventslistFrame != null) {
-				Log.i("oncreate", "onCreate: adding EventslistFragment to MainActivity");
-				// Add map fragment to the activity's container layout
 				eventslistFragment = new EventslistFragment();
 				fragmentTransaction.replace(eventslistFrame.getId(), eventslistFragment, EventslistFragment.class.getName());
 				eventslistFragment.setList(dbTools.getEvents());
 			}
-						
-			// If our layout has a container for the image selector fragment,
-			// create and add it
+
 			mapFrame = (ViewGroup) findViewById(R.id.map_frame);
 			if (mapFrame != null) {
-				Log.i("oncreate", "onCreate: adding MapFragment to MainActivity");
 				mapFragment = new MapFragment();
 				fragmentTransaction.replace(mapFrame.getId(), mapFragment, MapFragment.class.getName());
-
+				mapFragment.setList(dbTools.getEvents());
 			}
 
 			newsfeedFrame = (ViewGroup) findViewById(R.id.newsfeed_frame);
-			if (mapFrame != null) {
-				Log.i("oncreate", "onCreate: adding NewsfeedFragment to MainActivity");
-				// Add map fragment to the activity's container layout
+			if (newsfeedFrame != null) {
 				NewsfeedFragment newsfeedFragment = new NewsfeedFragment();
 				fragmentTransaction.replace(newsfeedFrame.getId(), newsfeedFragment, NewsfeedFragment.class.getName());
-
 			}
-			// TODO maybe only when there is something to commit!
-			// Commit the transaction
-			fragmentTransaction.commit();
 
+			fragmentTransaction.commit();
 		}
-		
-				
+
+
 		queryCloudEndpoint();
+
+		getPics();
 	}
 
 
@@ -177,20 +174,94 @@ public class MainActivity extends FragmentActivity {
 				else {
 					Log.i("onPostExecute", "no data was returned");
 				}
-				
+
 				if ( eventslistFragment != null )					
-					eventslistFragment.setList(dbTools.getEvents());
-					
+					eventslistFragment.setList( dbTools.getEvents() );
+
 				if ( mapFragment != null )					
-					mapFragment.setList(dbTools.getEvents());
-					
-				
+					mapFragment.setList( dbTools.getEvents() );
+
+
 				//dialog.dismiss();
 			}
 		};
 
 		task.execute(clientId);
 	}
+
+
+	// https://graph.facebook.com/shaverm/picture?type=square
+	private void getPics() {
+
+		for(HashMap<String, String> event : dbTools.getEvents())
+			new GetPicture().execute(event.get("eventId"));		
+
+	}
+
+	
+	// TODO:
+	// Disadvantages of using AsyncTasks
+	// The AsyncTask does not handle configuration changes automatically, i.e. if the activity is recreated, the programmer has to handle that in his coding.
+	// A common solution to this is to declare the AsyncTask in a retained headless fragment.
+	private class GetPicture extends AsyncTask<String, Void, Boolean> {
+		
+		@Override
+		public void onPreExecute() {				
+			
+		}
+
+		@Override
+		protected Boolean doInBackground(String... params) {
+			Boolean imageUpdated = false;
+
+			try {
+				URL url = new URL ( "https://graph.facebook.com/" + params[0] + "/picture?type=square" );
+				HttpURLConnection connection =  (HttpURLConnection) url.openConnection();
+
+				HttpURLConnection.setFollowRedirects(true);
+
+				connection.connect();
+				
+				// TBH I don't know if it's pulled the whole thing down from the server at this point.
+				
+				if( connection.getURL().toString() != dbTools.getEventInfo(params[0]).get("picUrl") ) {
+					imageUpdated = true;
+					
+					InputStream in = connection.getInputStream();
+					Bitmap jpeg = BitmapFactory.decodeStream(in);
+					
+
+					File saveImage;
+					try {
+				        String fileName = params[0];
+				        saveImage = File.createTempFile( fileName, null, MainActivity.this.getCacheDir() );
+					}
+				    catch (IOException e) {
+				        // Error while creating file
+				    }
+				    
+					// TODO update the database with the new 
+				}
+				
+				
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+			return imageUpdated;
+		}
+
+		@Override
+		public void onPostExecute(Boolean imageUpdated) {
+
+			if(imageUpdated) {
+				// find the item in the list and show the new picture
+			}
+
+		}
+	};
 
 
 }

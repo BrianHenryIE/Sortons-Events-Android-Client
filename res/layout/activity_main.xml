@@ -1,9 +1,9 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_activity_body"
     android:layout_width="wrap_content"
     android:layout_height="fill_parent"
-    tools:context=".MainActivity"
-    android:id="@+id/main_activity_body" >
+    tools:context=".MainActivity" >
 
     <FrameLayout
         android:id="@+id/map_frame"
@@ -15,14 +15,13 @@
         android:layout_width="400dp"
         android:layout_height="match_parent"
         android:layout_gravity="left"
-        android:background="#90FFFFFF"  />
+        android:background="#90FFFFFF" />
 
     <FrameLayout
         android:id="@+id/newsfeed_frame"
         android:layout_width="400dp"
         android:layout_height="match_parent"
         android:layout_gravity="right"
-         />
-
+ 		android:background="#40FFFFFF" />
 
 </FrameLayout>

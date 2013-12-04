@@ -15,7 +15,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class EventslistFragment extends ListFragment implements OnItemClickListener{
+public class EventslistFragment extends ListFragment implements OnItemClickListener {
 
 	private LayoutInflater inflater;
 	private ArrayList<HashMap<String, String>> events; 

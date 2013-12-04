@@ -70,7 +70,7 @@ public class MapFragment extends Fragment {
 	
 	public void showEvents(){
 		
-		if ( events != null ) 
+		if ( events != null && this.isAdded() ) 
 			for( HashMap<String, String> event : events ) {
 				if( event.keySet().contains("latitude") && event.get("latitude") != null && event.keySet().contains("longitude") && event.get("longitude") != null ) {
 					LatLng eventPin = new LatLng(Double.parseDouble(event.get("latitude")), Double.parseDouble(event.get("longitude")) );

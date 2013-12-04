@@ -28,7 +28,7 @@ public class DBTools extends SQLiteOpenHelper {
 		String q = "CREATE TABLE events ( id INTEGER PRIMARY KEY AUTOINCREMENT," + 
                    "eventId INTEGER, name TEXT, location TEXT," + 
 				   "startTimeDate TEXT, startTime TEXT, latitude REAL," +
-				   "longitude REAL )";
+				   "longitude REAL, picUrl TEXT )";
 		db.execSQL(q);
 		q = "CREATE TABLE sourcePages ( id INTEGER PRIMARY KEY AUTOINCREMENT," + 
 				"eventId INTEGER, pageId INTEGER, name TEXT," + 
@@ -132,7 +132,7 @@ public class DBTools extends SQLiteOpenHelper {
 	public HashMap<String, String> getEventInfo(String id) {
 		HashMap<String, String> event = new HashMap<String, String>();
 		SQLiteDatabase db = this.getReadableDatabase();
-		String q = "SELECT * FROM modules WHERE moduleId='" + id + "'";
+		String q = "SELECT * FROM events WHERE eventId='" + id + "'";
 		Cursor cursor = db.rawQuery(q, null);
 		if (cursor.moveToFirst()) {
 			event.put("id", cursor.getString(0));
