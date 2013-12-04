@@ -6,8 +6,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -44,21 +46,56 @@ public class DBTools extends SQLiteOpenHelper {
 		db.execSQL(q);
 		onCreate(db);
 	}
-	public void addUrlForEvent(String eventId, String url) {
-		String q = "SELECT * FROM events where eventId='" + eventId + "'";
-		SQLiteDatabase db = this.getWritableDatabase();
-		Cursor cursor = db.rawQuery(q, null);
-		if (cursor.moveToFirst()) {
-			ContentValues values = new ContentValues();
-			values.put("picUrl", url);
-			int rowsUpdated = db.update("events", values, "eventId=" + eventId, null);
-			if (rowsUpdated != 1) {
-				Log.e("adding url", "Adding a url for event with id: " + eventId + "updated " + rowsUpdated + "rows");
-			}
+	public void updateEvent(HashMap<String,String> oldEvent, HashMap<String,String> newEvent) {
+		String eventId = oldEvent.get("eventId");
+		ContentValues values = new ContentValues();
+		//grabs all the different values
+		for (Map.Entry<String, String> entry : newEvent.entrySet()) {
+		    String key = entry.getKey();
+		    String value = entry.getValue();
+		    if (value != oldEvent.get(key)) {
+		    	values.put(key, value);
+		    }
 		}
-		db.close();
+		if (values.size() > 0) {
+			String q = "SELECT * FROM events where eventId='" + eventId + "'";
+			SQLiteDatabase db = this.getWritableDatabase();
+			Cursor cursor = db.rawQuery(q, null);
+			if (cursor.moveToFirst()) {
+				int rowsUpdated = db.update("events", values, "eventId=" + eventId, null);
+				if (rowsUpdated != 1) {
+					Log.e("adding url", "Adding a url for event with id: " + eventId + "updated " + rowsUpdated + "rows");
+				}
+			}
+			db.close();
+		}
 	}
 	
+	//this function will update the database deleting anything not present in this list
+	public void updateEvents(List<HashMap<String, String>> values) {
+		ArrayList<HashMap<String,String>> old = getEvents();
+		ArrayList<HashMap<String,String>> toBeAdded = new ArrayList<HashMap<String,String>>();
+		for (int i = 0; i < values.size(); i++) {
+			boolean found = false;
+			for (int j = 0; j < old.size(); j++) {
+				if (values.get(i).get("eventId") == old.get(j).get("eventId")) {
+					updateEvent(old.get(j), values.get(i));
+					found = true;
+					//do not need to keep checking this value
+					old.remove(j);
+				}
+			}
+			if (!found) {
+				toBeAdded.add(values.get(i));
+			}
+		}
+		List<String> toBeDeleted = new ArrayList<String>();
+		for (int i = 0; i < old.size();i++) {
+			toBeDeleted.add(old.get(i).get("eventId"));
+		}
+		deleteEvents(toBeDeleted);
+		insertEvents(toBeAdded);
+	}
 	
 	public void insertEvents(List<HashMap<String, String>> values) {
 		SQLiteDatabase db = this.getWritableDatabase();
