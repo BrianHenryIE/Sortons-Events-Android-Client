@@ -9,4 +9,9 @@
     <string name="title_activity_newsfeed_fragment">Latest Updates</string>
     <string name="title_activity_eventslist_fragment">EventslistFragment</string>
 
+    
+    <string name="open_in_browser">Open in Browser</string>
+    <string name="open_in_facebook">Open in Facebook App</string>
+    <string name="add_to_calendar">Add to Calendar</string>
+    
 </resources>
