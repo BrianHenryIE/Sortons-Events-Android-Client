@@ -88,10 +88,6 @@ public class DiscoveredEventRowAdapter extends ArrayAdapter<DiscoveredEvent> {
 		// Localise these strings!
 		try {
 			Date eventDate  = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ENGLISH).parse(events.get(position).get("startTimeDate"));
-
-			// Default date format
-			// For events this year
-			SimpleDateFormat sdf = new SimpleDateFormat("EEEE', 'MM' 'LLLL', at 'k':'mm", Locale.getDefault());
 			
 			Calendar today = new GregorianCalendar();
 			today.setTime(eventDate);
@@ -101,36 +97,48 @@ public class DiscoveredEventRowAdapter extends ArrayAdapter<DiscoveredEvent> {
 			tomorrow.setTime(eventDate);
 			tomorrow.add(Calendar.DATE, -1);
 			tomorrow.get(Calendar.DAY_OF_YEAR);
+			
+			Calendar nextFiveDays = new GregorianCalendar();
+			nextFiveDays.setTime(eventDate);
+			nextFiveDays.add(Calendar.DATE, -5);
+			nextFiveDays.get(Calendar.DAY_OF_YEAR);
 		
-			// For events next year
-			if ( eventDate.getYear() != new Date().getYear() )
+			String sdfs = null;
+				// For events next year
+			if ( eventDate.getYear() != new Date().getYear() ) {
 				if ( eventDate.getHours() == 0 && eventDate.getMinutes() == 0 )
-					sdf = new SimpleDateFormat("EEEE', 'MM' 'LLLL', 'yyyy", Locale.getDefault());
+					sdfs = "EEEE', 'MM' 'LLLL', 'yyyy";
 				else
-					sdf = new SimpleDateFormat("EEEE', 'MM' 'LLLL', 'yyyy', at 'k':'mm", Locale.getDefault());
-
-			// For events this week
-			if ( eventDate.getDay() - (new Date().getDay()) < 5 )
+					sdfs = "EEEE', 'MM' 'LLLL', 'yyyy', at 'k':'mm";
+			
+				// For events this week
+			} else if ( nextFiveDays.get(Calendar.DAY_OF_YEAR) < Calendar.getInstance().get(Calendar.DAY_OF_YEAR) ) {
 				if ( eventDate.getHours() == 0 && eventDate.getMinutes() == 0 )
-					sdf = new SimpleDateFormat("EEEE", Locale.getDefault());
+					sdfs = "EEEE";
 				else
-					sdf = new SimpleDateFormat("EEEE' at 'k':'mm", Locale.getDefault());
+					sdfs = "EEEE' at 'k':'mm";
 	
 			// For events tomorrow
-			if ( tomorrow.get(Calendar.DAY_OF_YEAR) == Calendar.getInstance().get(Calendar.DAY_OF_YEAR) )
+			} else if ( tomorrow.get(Calendar.DAY_OF_YEAR) == Calendar.getInstance().get(Calendar.DAY_OF_YEAR) ) {
 				if ( eventDate.getHours() == 0 && eventDate.getMinutes() == 0 )
-					sdf = new SimpleDateFormat("'Tomorrow'", Locale.getDefault());
+					sdfs = "'Tomorrow'";
 				else
-					sdf = new SimpleDateFormat("'Tomorrow at 'k':'mm", Locale.getDefault());
-
+					sdfs = "'Tomorrow at 'k':'mm";
 			// For events today
-			if ( today.get(Calendar.DAY_OF_YEAR) == Calendar.getInstance().get(Calendar.DAY_OF_YEAR) )
+			} else if ( today.get(Calendar.DAY_OF_YEAR) == Calendar.getInstance().get(Calendar.DAY_OF_YEAR) ) {
 				if ( eventDate.getHours() == 0 && eventDate.getMinutes() == 0 )
-					sdf = new SimpleDateFormat("'Today'", Locale.getDefault());
+					sdfs = "'Today'";
 				else
-					sdf = new SimpleDateFormat("'Today at 'k':'mm", Locale.getDefault());
-
+					sdfs = "'Today at 'k':'mm";
 			
+			} else {
+				if ( eventDate.getHours() == 0 && eventDate.getMinutes() == 0 )
+					 sdfs = "EEEE', 'MM' 'LLLL";
+				else
+					 sdfs = "EEEE', 'MM' 'LLLL', at 'k':'mm";
+			}
+			
+			SimpleDateFormat sdf = new SimpleDateFormat(sdfs, Locale.getDefault());
 			holder.time.setText( sdf.format( eventDate ) );
 
 		} catch (ParseException e1) {
