@@ -78,7 +78,7 @@ public class DBTools extends SQLiteOpenHelper {
 		for (int i = 0; i < values.size(); i++) {
 			boolean found = false;
 			for (int j = 0; j < old.size(); j++) {
-				if (values.get(i).get("eventId") == old.get(j).get("eventId")) {
+				if (values.get(i).get("eventId").equals(old.get(j).get("eventId"))) {
 					updateEvent(old.get(j), values.get(i));
 					found = true;
 					//do not need to keep checking this value
