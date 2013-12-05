@@ -9,11 +9,11 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
 import android.app.ProgressDialog;
+import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -57,7 +57,8 @@ public class MainActivity extends FragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
+	
+		
 		FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
 
 		// Restore state
@@ -109,6 +110,10 @@ public class MainActivity extends FragmentActivity {
 		return true;
 	}
 
+	public void onConfigurationChanged(){
+		
+	}
+	
 
 	private void queryCloudEndpoint() {
 

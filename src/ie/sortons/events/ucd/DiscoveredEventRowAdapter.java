@@ -25,11 +25,11 @@ import android.widget.TextView;
 import com.appspot.sortonsevents.upcomingEvents.model.DiscoveredEvent;
 
 public class DiscoveredEventRowAdapter extends ArrayAdapter<DiscoveredEvent> {
-	
+
 	DBTools dbTools;
 	private final Context context;
 	List<HashMap<String,String>> events;
-	
+
 	public DiscoveredEventRowAdapter(Context context, List<HashMap<String,String>> events) {
 		super(context, R.layout.discoveredeventlistrow);
 		this.context = context;
@@ -54,14 +54,15 @@ public class DiscoveredEventRowAdapter extends ArrayAdapter<DiscoveredEvent> {
 	public int getCount() {
 		return events.size();
 	}
+	
 	/* (non-Javadoc)
 	 * @see android.widget.ArrayAdapter#getView(int, android.view.View, android.view.ViewGroup)
 	 */
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		
+
 		View view = null;
-		
+
 		if (convertView == null) {
 			LayoutInflater inflator = ((Activity) context).getLayoutInflater();
 			view = inflator.inflate(R.layout.discoveredeventlistrow, null);
@@ -76,10 +77,10 @@ public class DiscoveredEventRowAdapter extends ArrayAdapter<DiscoveredEvent> {
 		} else {
 			view = convertView;
 		}
-		
-		
+
+
 		ViewHolder holder = (ViewHolder) view.getTag();
-		
+
 		holder.name.setText(events.get(position).get("name"));
 		holder.location.setText(events.get(position).get("location"));
 		holder.eventId.setText(events.get(position).get("eventId"));
@@ -88,64 +89,65 @@ public class DiscoveredEventRowAdapter extends ArrayAdapter<DiscoveredEvent> {
 		// Localise these strings!
 		try {
 			Date eventDate  = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ENGLISH).parse(events.get(position).get("startTimeDate"));
-			
+
 			Calendar today = new GregorianCalendar();
 			today.setTime(eventDate);
 			today.get(Calendar.DAY_OF_YEAR);
-			
+
 			Calendar tomorrow = new GregorianCalendar();
 			tomorrow.setTime(eventDate);
 			tomorrow.add(Calendar.DATE, -1);
 			tomorrow.get(Calendar.DAY_OF_YEAR);
-			
+
 			Calendar nextFiveDays = new GregorianCalendar();
 			nextFiveDays.setTime(eventDate);
 			nextFiveDays.add(Calendar.DATE, -5);
 			nextFiveDays.get(Calendar.DAY_OF_YEAR);
-		
-			String sdfs = null;
-				// For events next year
-			if ( eventDate.getYear() != new Date().getYear() ) {
+
+			String sdfTemplate = null;
+			// For events today
+			if ( today.get(Calendar.DAY_OF_YEAR) == Calendar.getInstance().get(Calendar.DAY_OF_YEAR) ) {
 				if ( eventDate.getHours() == 0 && eventDate.getMinutes() == 0 )
-					sdfs = "EEEE', 'MM' 'LLLL', 'yyyy";
+					sdfTemplate = "'Today'";
 				else
-					sdfs = "EEEE', 'MM' 'LLLL', 'yyyy', at 'k':'mm";
-			
+					sdfTemplate = "'Today at 'k':'mm";
+				
+				// For events tomorrow
+			} else if ( tomorrow.get(Calendar.DAY_OF_YEAR) == Calendar.getInstance().get(Calendar.DAY_OF_YEAR) ) {
+				if ( eventDate.getHours() == 0 && eventDate.getMinutes() == 0 )
+					sdfTemplate = "'Tomorrow'";
+				else
+					sdfTemplate = "'Tomorrow at 'k':'mm";
+
 				// For events this week
 			} else if ( nextFiveDays.get(Calendar.DAY_OF_YEAR) < Calendar.getInstance().get(Calendar.DAY_OF_YEAR) ) {
 				if ( eventDate.getHours() == 0 && eventDate.getMinutes() == 0 )
-					sdfs = "EEEE";
+					sdfTemplate = "EEEE";
 				else
-					sdfs = "EEEE' at 'k':'mm";
-	
-			// For events tomorrow
-			} else if ( tomorrow.get(Calendar.DAY_OF_YEAR) == Calendar.getInstance().get(Calendar.DAY_OF_YEAR) ) {
+					sdfTemplate = "EEEE' at 'k':'mm";
+
+				// For events next year
+			} else if ( eventDate.getYear() != new Date().getYear() ) {
 				if ( eventDate.getHours() == 0 && eventDate.getMinutes() == 0 )
-					sdfs = "'Tomorrow'";
+					sdfTemplate = "EEEE', 'MM' 'LLLL', 'yyyy";
 				else
-					sdfs = "'Tomorrow at 'k':'mm";
-			// For events today
-			} else if ( today.get(Calendar.DAY_OF_YEAR) == Calendar.getInstance().get(Calendar.DAY_OF_YEAR) ) {
-				if ( eventDate.getHours() == 0 && eventDate.getMinutes() == 0 )
-					sdfs = "'Today'";
-				else
-					sdfs = "'Today at 'k':'mm";
-			
+					sdfTemplate = "EEEE', 'MM' 'LLLL', 'yyyy', at 'k':'mm";
+
 			} else {
 				if ( eventDate.getHours() == 0 && eventDate.getMinutes() == 0 )
-					 sdfs = "EEEE', 'MM' 'LLLL";
+					sdfTemplate = "EEEE', 'MM' 'LLLL";
 				else
-					 sdfs = "EEEE', 'MM' 'LLLL', at 'k':'mm";
+					sdfTemplate = "EEEE', 'MM' 'LLLL', at 'k':'mm";
 			}
-			
-			SimpleDateFormat sdf = new SimpleDateFormat(sdfs, Locale.getDefault());
+
+			SimpleDateFormat sdf = new SimpleDateFormat(sdfTemplate, Locale.getDefault());
 			holder.time.setText( sdf.format( eventDate ) );
 
 		} catch (ParseException e1) {
 			e1.printStackTrace();
 		}
 
-		
+
 		File eventPic = new File(context.getCacheDir(), events.get(position).get("eventId"));	
 		if ( eventPic.exists() )
 			try {
@@ -157,3 +159,4 @@ public class DiscoveredEventRowAdapter extends ArrayAdapter<DiscoveredEvent> {
 		return view;
 	}
 } 
+
