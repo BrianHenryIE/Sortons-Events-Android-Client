@@ -13,7 +13,9 @@ import java.util.HashMap;
 import java.util.List;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -58,6 +60,10 @@ public class MainActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 	
+		if ( isXLargeScreen(this) )
+		    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+		else
+		    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 		
 		FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
 
@@ -111,7 +117,7 @@ public class MainActivity extends FragmentActivity {
 	}
 
 	public void onConfigurationChanged(){
-		
+		// http://androidblogger.blogspot.ie/2011/08/orientation-for-both-phones-and-tablets.html
 	}
 	
 
@@ -276,5 +282,11 @@ public class MainActivity extends FragmentActivity {
 		}
 	};
 
+	
+	private boolean isXLargeScreen(Context context) {
+		return (context.getResources().getConfiguration().screenLayout
+				& Configuration.SCREENLAYOUT_SIZE_MASK)
+				>= Configuration.SCREENLAYOUT_SIZE_XLARGE;
+	}
 
 }
