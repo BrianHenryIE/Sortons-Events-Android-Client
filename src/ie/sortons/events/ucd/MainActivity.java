@@ -93,8 +93,11 @@ public class MainActivity extends FragmentActivity {
 		}
 
 
+		for( String s : this.getCacheDir().list() )
+			Log.i("file",s);
+		
 		queryCloudEndpoint();
-
+		
 		getPics();
 	}
 
