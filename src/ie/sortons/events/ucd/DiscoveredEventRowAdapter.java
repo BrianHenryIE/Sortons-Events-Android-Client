@@ -22,9 +22,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.appspot.sortonsevents.upcomingEvents.model.DiscoveredEvent;
-
-public class DiscoveredEventRowAdapter extends ArrayAdapter<DiscoveredEvent> {
+public class DiscoveredEventRowAdapter extends ArrayAdapter<HashMap<String,String>> {
 
 	DBTools dbTools;
 	private final Context context;
@@ -85,8 +83,6 @@ public class DiscoveredEventRowAdapter extends ArrayAdapter<DiscoveredEvent> {
 		holder.location.setText(events.get(position).get("location"));
 		holder.eventId.setText(events.get(position).get("eventId"));
 
-		// TODO
-		// Localise these strings!
 		try {
 			Date eventDate  = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ENGLISH).parse(events.get(position).get("startTimeDate"));
 
@@ -133,6 +129,7 @@ public class DiscoveredEventRowAdapter extends ArrayAdapter<DiscoveredEvent> {
 				else
 					sdfTemplate = "EEEE', 'MM' 'LLLL', 'yyyy', at 'k':'mm";
 
+				// For everything in between
 			} else {
 				if ( eventDate.getHours() == 0 && eventDate.getMinutes() == 0 )
 					sdfTemplate = "EEEE', 'MM' 'LLLL";

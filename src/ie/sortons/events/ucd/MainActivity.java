@@ -45,7 +45,6 @@ public class MainActivity extends FragmentActivity {
 	ProgressDialog dialog;
 	TextView txtMessage;
 
-
 	ViewGroup mapFrame; // (frame)
 	ViewGroup eventslistFrame; // (frame)
 	ViewGroup newsfeedFrame; // (frame)
@@ -191,8 +190,10 @@ public class MainActivity extends FragmentActivity {
 					Log.i("onPostExecute", "no data was returned");
 				}
 
-				if ( eventslistFragment != null )					
+				if ( eventslistFragment != null ) {
 					eventslistFragment.setList( dbTools.getEvents() );
+					eventslistFragment.updateList();
+				}
 
 				if ( mapFragment != null )					
 					mapFragment.setList( dbTools.getEvents() );

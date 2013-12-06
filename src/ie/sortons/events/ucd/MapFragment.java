@@ -34,24 +34,16 @@ public class MapFragment extends Fragment {
 		} catch (GooglePlayServicesNotAvailableException e) {
 		    Log.e("map", " " + e.getMessage());
 		}
-				
-		
-		// TODO
-		// Google Play check for map
-		Log.e("map stuff", " should be displaying a map");
+	
 	
 	    FragmentManager myFM = getActivity().getSupportFragmentManager();
-		//final SupportMapFragment myMAPF = (SupportMapFragment) myFM.findFragmentById(R.id.map);
 	    
 		// Get a handle to the Map Fragment
-		// GoogleMap map = ((SupportMapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
 		map = ((SupportMapFragment) myFM.findFragmentById(R.id.map)).getMap();
 		
 		map.getUiSettings().setZoomControlsEnabled(false);
 		map.getUiSettings().setMyLocationButtonEnabled(false);
-		
-		// TODO
-		// Move to config
+	
 		LatLng home = new LatLng(53.307775, -6.219453);
 
 		map.moveCamera(CameraUpdateFactory.newLatLngZoom(home, 14));

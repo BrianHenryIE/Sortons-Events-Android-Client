@@ -15,7 +15,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
@@ -27,9 +26,11 @@ public class EventslistFragment extends ListFragment implements OnItemClickListe
 	private LayoutInflater inflater;
 	private ArrayList<HashMap<String, String>> events; 
 
+	private DiscoveredEventRowAdapter adapter;
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		DiscoveredEventRowAdapter adapter = new DiscoveredEventRowAdapter(inflater.getContext(), events);
+		adapter = new DiscoveredEventRowAdapter(inflater.getContext(), events);
 		setListAdapter(adapter);
 		this.inflater = inflater;
 		return super.onCreateView(inflater, container, savedInstanceState);
@@ -121,7 +122,13 @@ public class EventslistFragment extends ListFragment implements OnItemClickListe
 
 
 	public void setList(ArrayList<HashMap<String, String>> events) {
-		this.events = events;		
+		this.events = events;	
+	}
+	
+	public void updateList(){
+		adapter.clear();
+		adapter = new DiscoveredEventRowAdapter(inflater.getContext(), events);
+		setListAdapter(adapter);
 	}
 
 }

@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -32,15 +33,18 @@ public class NewsfeedFragment extends Fragment {
 
 	Context context;
 
+	HashMap<String, String> fbPages = new HashMap<String, String>();
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		
 		context = inflater.getContext();
-
-		View view = inflater.inflate(R.layout.fragment_newsfeed, container, false);
-
-		WebView webView = (WebView) view.findViewById(R.id.webview);
-
+		
+		WebView webView = new WebView(inflater.getContext()); 
+		webView.setLayoutParams(new ViewGroup.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)); 
+		
+		View view = webView;
+		
 		webView.setWebViewClient(new WebViewClient() {
 
 			@Override
@@ -88,7 +92,7 @@ public class NewsfeedFragment extends Fragment {
 							intent = new Intent(Intent.ACTION_VIEW, Uri.parse("fb://event/" + m.group()));
 
 							// photo
-							// 12-06 19:59:40.365: I/shouldOverrideUrlLoading(4719): http://m.facebook.com/photo.php?fbid=639128962810167&id=112316168824785&set=a.131881163534952.22428.112316168824785&source=48&locale2=en_US
+							// http://m.facebook.com/photo.php?fbid=639128962810167&id=112316168824785&set=a.131881163534952.22428.112316168824785&source=48&locale2=en_US
 						} else if ( url.contains( "/photo.php?" ) ) {
 							Pattern p = Pattern.compile("\\d+");
 							Matcher m = p.matcher(url);
@@ -138,7 +142,7 @@ public class NewsfeedFragment extends Fragment {
 			}
 
 			@Override
-			public WebResourceResponse shouldInterceptRequest (final WebView view, String url) {
+			public WebResourceResponse shouldInterceptRequest(final WebView view, String url) {
 				// https://labs.mwrinfosecurity.com/blog/2012/04/23/adventures-with-android-webviews/
 				if(url.contains("facebook.com") && !url.contains("plugins") && !url.contains("facebook.com/connect") ){
 					shouldOverrideUrlLoading(view, url);
@@ -189,20 +193,14 @@ public class NewsfeedFragment extends Fragment {
 
 			@Override
 			public void onPostExecute(ClientPageData data) {
-				NewsfeedFragment.this.cpd = data;
-				for(com.appspot.sortonsevents.clientdata.model.FbPage page : cpd.getIncludedPages()){
+				for(com.appspot.sortonsevents.clientdata.model.FbPage page : data.getIncludedPages())
 					if(!page.getPageUrl().contains("pages/"))
 						NewsfeedFragment.this.fbPages.put(page.getPageUrl().replace("http://www.facebook.com/", ""), page.getPageId());
-				}
 			}
 		};
 
 		task.execute(clientId);
 	}
 
-	// Avoid internal getters and setters!
-	ClientPageData cpd;
-
-	HashMap<String, String> fbPages = new HashMap<String, String>();
 
 }

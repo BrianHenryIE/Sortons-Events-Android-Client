@@ -22,6 +22,6 @@
         android:layout_width="400dp"
         android:layout_height="match_parent"
         android:layout_gravity="right"
- 		android:background="#40FFFFFF" />
+ 		android:background="#90FFFFFF" />
 
 </FrameLayout>
