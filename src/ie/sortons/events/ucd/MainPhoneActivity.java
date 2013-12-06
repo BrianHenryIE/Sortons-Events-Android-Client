@@ -1,5 +1,8 @@
 package ie.sortons.events.ucd;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import android.os.Bundle;
 import android.app.Activity;
 import android.support.v4.app.Fragment;
@@ -44,10 +47,11 @@ public class MainPhoneActivity extends FragmentActivity {
         
         //initialize fragments
         newsfeedFragment =  new NewsfeedFragment();
+        ArrayList<HashMap<String, String>>  events = dbTools.getEvents();
         mapFragment = new MapFragment();
-		mapFragment.setList(dbTools.getEvents());
+		mapFragment.setList(events);
 		eventslistFragment = new EventslistFragment();
-		eventslistFragment.setList(dbTools.getEvents());
+		eventslistFragment.setList(events);
 	}
 	
 	@Override
