@@ -108,16 +108,16 @@ public class DiscoveredEventRowAdapter extends ArrayAdapter<DiscoveredEvent> {
 			// For events today
 			if ( today.get(Calendar.DAY_OF_YEAR) == Calendar.getInstance().get(Calendar.DAY_OF_YEAR) ) {
 				if ( eventDate.getHours() == 0 && eventDate.getMinutes() == 0 )
-					sdfTemplate = "'Today'";
+					sdfTemplate = "'"+context.getString(R.string.today)+"'";
 				else
-					sdfTemplate = "'Today at 'k':'mm";
+					sdfTemplate = "'"+context.getString(R.string.today_at)+"'k':'mm";
 				
 				// For events tomorrow
 			} else if ( tomorrow.get(Calendar.DAY_OF_YEAR) == Calendar.getInstance().get(Calendar.DAY_OF_YEAR) ) {
 				if ( eventDate.getHours() == 0 && eventDate.getMinutes() == 0 )
-					sdfTemplate = "'Tomorrow'";
+					sdfTemplate = "'"+context.getString(R.string.tomorrow)+"'";
 				else
-					sdfTemplate = "'Tomorrow at 'k':'mm";
+					sdfTemplate = "'"+context.getString(R.string.tomorrow_at)+"'k':'mm";
 
 				// For events this week
 			} else if ( nextFiveDays.get(Calendar.DAY_OF_YEAR) < Calendar.getInstance().get(Calendar.DAY_OF_YEAR) ) {
