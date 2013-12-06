@@ -19,6 +19,9 @@
 #   public *;
 #}
 
+-dontwarn **CompatHoneycomb
+-keep class android.support.v4.** { *; }
+
 -keep class * extends java.util.ListResourceBundle {
     protected Object[][] getContents();
 }
@@ -35,3 +38,6 @@
 -keepnames class * implements android.os.Parcelable {
     public static final ** CREATOR;
 }
+
+-dontwarn com.google.android.gms.*
+-ignorewarnings 

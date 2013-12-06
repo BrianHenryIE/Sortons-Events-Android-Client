@@ -12,5 +12,6 @@
     <string name="open_in_facebook">Open in Facebook App</string>
     <string name="add_to_calendar">Add to Calendar</string>
     <string name="title_activity_launcher">LauncherActivity</string>
+    <string name="title_activity_main_phone">MainPhoneActivity</string>
 
 </resources>

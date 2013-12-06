@@ -14,6 +14,7 @@ import java.util.List;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
@@ -102,6 +103,11 @@ public class MainActivity extends FragmentActivity {
 		queryCloudEndpoint();
 
 		getPics();
+		if (!isXLargeScreen(this)) {
+			Intent phoneIntent = new Intent(getApplication(), MainPhoneActivity.class);
+			startActivity(phoneIntent);
+			finish();
+		}
 	}
 
 
