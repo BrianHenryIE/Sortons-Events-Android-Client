@@ -13,5 +13,9 @@
     <string name="add_to_calendar">Add to Calendar</string>
     <string name="title_activity_launcher">LauncherActivity</string>
     <string name="title_activity_main_phone">MainPhoneActivity</string>
+    <string name="today">Today</string>
+    <string name="today_at">Today at</string>
+    <string name="tomorrow">Tomorrow</string>
+    <string name="tomorrow_at">Tomorrow at</string>
 
 </resources>

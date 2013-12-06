@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Belfield Sociaal</string>
+    <string name="menu_settings">Instellingen</string>
+    <string name="title_activity_map">Kaart</string>
+    <string name="action_settings">Instellingen</string>
+    <string name="title_activity_newsfeed_fragment">Nieuwe Updates</string>
+    <string name="title_activity_eventslist_fragment">EventslistFragment</string>
+    <string name="open_in_browser">Openen met Browser</string>
+    <string name="open_in_facebook">Openen met Facebook App</string>
+    <string name="add_to_calendar">Toevoegen aan Agenda</string>
+    <string name="title_activity_launcher">LauncherActivity</string>
+    <string name="title_activity_main_phone">MainPhoneActivity</string>
+	<string name="today">Vandaag</string>
+    <string name="today_at">Vandaag om</string>
+    <string name="tomorrow">Morgen</string>
+    <string name="tomorrow_at">Morgen om</string>
+</resources>
