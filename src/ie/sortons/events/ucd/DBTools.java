@@ -46,6 +46,7 @@ public class DBTools extends SQLiteOpenHelper {
 		db.execSQL(q);
 		onCreate(db);
 	}
+	
 	public void updateEvent(HashMap<String,String> oldEvent, HashMap<String,String> newEvent) {
 		String eventId = oldEvent.get("eventId");
 		ContentValues values = new ContentValues();
@@ -67,7 +68,7 @@ public class DBTools extends SQLiteOpenHelper {
 					Log.e("adding url", "Adding a url for event with id: " + eventId + "updated " + rowsUpdated + "rows");
 				}
 			}
-			db.close();
+			// db.close();
 		}
 	}
 	
@@ -111,10 +112,10 @@ public class DBTools extends SQLiteOpenHelper {
 			if (values.get(i).containsKey("picUrl")) {
 				vals.put("picUrl", values.get(i).get("picUrl"));
 			}
-			Log.i("insertEvents", "added event");
+
 			db.insert("events", null, vals);
 		}
-		db.close();
+		// db.close();
 	}
 	
 	public void insertSourcePages(List<HashMap<String, String>> values) {
@@ -128,8 +129,9 @@ public class DBTools extends SQLiteOpenHelper {
 			
 			db.insert("sourcePages", null, vals);
 		}
-		db.close();
+		//db.close();
 	}
+	
 	//should be called by deleteAllEventsBeforeDate
 	public void deleteEvents(List<String> eventId) {
 		SQLiteDatabase db = this.getWritableDatabase();
@@ -139,8 +141,9 @@ public class DBTools extends SQLiteOpenHelper {
 			q = "DELETE FROM sourcePages WHERE eventId='" + eventId.get(i) + "'";
 			db.execSQL(q);
 		}
-		db.close();
+		// db.close();
 	}
+	
 	//pass in Date and all events before date are deleted
 	public void deleteAllEventsBeforeDate(Date before) {
 		ArrayList<HashMap<String, String>> events = getEvents();
@@ -199,9 +202,9 @@ public class DBTools extends SQLiteOpenHelper {
 			event.put("startTime", cursor.getString(5));
 			event.put("latitude", cursor.getString(6));
 			event.put("longitude", cursor.getString(7));
-			event.put("picURL", cursor.getString(8));
+			event.put("picUrl", cursor.getString(8));
 		}
-		db.close();
+		//db.close();
 		return event;
 	}
 	
@@ -224,7 +227,15 @@ public class DBTools extends SQLiteOpenHelper {
 				pageList.add(page);
 			}	while (cursor.moveToNext());
 		}
-		db.close();
+		//db.close();
 		return pageList;
+	}
+	
+	public void savePicUrl(String eventId, String picUrl){
+		SQLiteDatabase db = this.getReadableDatabase();
+		ContentValues values = new ContentValues();
+	    values.put("picUrl", picUrl);
+		db.update("events", values, "eventId="+eventId, null);
+		//db.close();
 	}
 }

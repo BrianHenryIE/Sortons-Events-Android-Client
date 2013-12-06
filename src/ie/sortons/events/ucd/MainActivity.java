@@ -59,12 +59,12 @@ public class MainActivity extends FragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-	
+
 		if ( isXLargeScreen(this) )
-		    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 		else
-		    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-		
+			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
 		FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
 
 		// Restore state
@@ -99,12 +99,8 @@ public class MainActivity extends FragmentActivity {
 			fragmentTransaction.commit();
 		}
 
-
-		for( String s : this.getCacheDir().list() )
-			Log.i("file",s);
-		
 		queryCloudEndpoint();
-		
+
 		getPics();
 	}
 
@@ -119,7 +115,7 @@ public class MainActivity extends FragmentActivity {
 	public void onConfigurationChanged(){
 		// http://androidblogger.blogspot.ie/2011/08/orientation-for-both-phones-and-tablets.html
 	}
-	
+
 
 	private void queryCloudEndpoint() {
 
@@ -206,22 +202,20 @@ public class MainActivity extends FragmentActivity {
 
 	// https://graph.facebook.com/shaverm/picture?type=square
 	private void getPics() {
-
 		for(HashMap<String, String> event : dbTools.getEvents())
 			new GetPicture().execute(event.get("eventId"));		
-
 	}
 
-	
+
 	// TODO:
 	// Disadvantages of using AsyncTasks
 	// The AsyncTask does not handle configuration changes automatically, i.e. if the activity is recreated, the programmer has to handle that in his coding.
 	// A common solution to this is to declare the AsyncTask in a retained headless fragment.
 	private class GetPicture extends AsyncTask<String, Void, Boolean> {
-		
+
 		@Override
 		public void onPreExecute() {				
-			
+
 		}
 
 		@Override
@@ -229,40 +223,33 @@ public class MainActivity extends FragmentActivity {
 			Boolean imageUpdated = false;
 
 			try {
-				Log.i("GetPicture", params[0]);
+				// TOOD
+				// Square isn't always 50x50
 				URL url = new URL ( "https://graph.facebook.com/" + params[0] + "/picture?type=square" );
 				HttpURLConnection connection =  (HttpURLConnection) url.openConnection();
-
 				HttpURLConnection.setFollowRedirects(true);
-
 				connection.connect();
-				
+
 				// TBH I don't know if it's pulled the whole thing down from the server at this point.
-				
-				// TODO: uncomment when the db side is done
-				// if( connection.getURL().toString() != dbTools.getEventInfo(params[0]).get("picUrl") ) {
+				if( connection.getURL().equals( dbTools.getEventInfo(params[0]).get("picUrl") ) ) {
 					imageUpdated = true;
-					
 					InputStream in = connection.getInputStream();
 					Bitmap newImage = BitmapFactory.decodeStream(in);
-					
-
 					File saveImage;
 					try {
-				        saveImage = new File(MainActivity.this.getCacheDir(), params[0]);
-				        FileOutputStream fOut = new FileOutputStream(saveImage);
-				        newImage.compress(Bitmap.CompressFormat.JPEG, 85, fOut);
-				        fOut.flush();
-				        fOut.close();
+						saveImage = new File(MainActivity.this.getCacheDir(), params[0]);
+						FileOutputStream fOut = new FileOutputStream(saveImage);
+						newImage.compress(Bitmap.CompressFormat.JPEG, 85, fOut);
+						fOut.flush();
+						fOut.close();
+
+						dbTools.savePicUrl(params[0], connection.getURL().toString());
 					}
-				    catch (IOException e) {
-				        // Error while creating file
-				    }
-				    
-					// TODO update the database with the new 
-				//}
-				
-				
+					catch (IOException e) {
+						// Error while creating file
+					}
+				}
+
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -276,13 +263,14 @@ public class MainActivity extends FragmentActivity {
 		public void onPostExecute(Boolean imageUpdated) {
 
 			if(imageUpdated) {
+				// TODO
 				// find the item in the list and show the new picture
 			}
 
 		}
 	};
 
-	
+
 	private boolean isXLargeScreen(Context context) {
 		return (context.getResources().getConfiguration().screenLayout
 				& Configuration.SCREENLAYOUT_SIZE_MASK)
