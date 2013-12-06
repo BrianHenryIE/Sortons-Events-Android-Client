@@ -102,6 +102,7 @@ public class MainActivity extends FragmentActivity {
 		queryCloudEndpoint();
 
 		getPics();
+
 		if (!isXLargeScreen(this)) {
 			Intent phoneIntent = new Intent(getApplication(), MainPhoneActivity.class);
 			startActivity(phoneIntent);
@@ -199,6 +200,7 @@ public class MainActivity extends FragmentActivity {
 					mapFragment.setList( dbTools.getEvents() );
 
 
+				MainActivity.this.getPics();
 				//dialog.dismiss();
 			}
 		};
@@ -213,6 +215,13 @@ public class MainActivity extends FragmentActivity {
 			new GetPicture().execute(event.get("eventId"));		
 	}
 
+	private void refreshList(){
+		if ( eventslistFragment != null )
+			eventslistFragment.updateList();
+		
+		if ( mapFragment != null )					
+			mapFragment.setList( dbTools.getEvents() );
+	}
 
 	// TODO:
 	// Disadvantages of using AsyncTasks
@@ -228,7 +237,6 @@ public class MainActivity extends FragmentActivity {
 		@Override
 		protected Boolean doInBackground(String... params) {
 			Boolean imageUpdated = false;
-
 			try {
 				// TODO
 				// Square isn't always 50x50
@@ -238,7 +246,8 @@ public class MainActivity extends FragmentActivity {
 				connection.connect();
 
 				// TBH I don't know if it's pulled the whole thing down from the server at this point.
-				if( !connection.getURL().toString().equals( dbTools.getEventInfo(params[0]).get("picUrl") ) ) {				 
+				String picUrl = (dbTools.getEventInfo(params[0]).get("picUrl") != null ) ? dbTools.getEventInfo(params[0]).get("picUrl")  : "";
+				if( !connection.getURL().toString().equals( picUrl ) ) {				 
 					imageUpdated = true;
 					InputStream in = connection.getInputStream();
 					Bitmap newImage = BitmapFactory.decodeStream(in);
@@ -249,7 +258,6 @@ public class MainActivity extends FragmentActivity {
 						newImage.compress(Bitmap.CompressFormat.JPEG, 85, fOut);
 						fOut.flush();
 						fOut.close();
-
 						dbTools.savePicUrl(params[0], connection.getURL().toString());
 					}
 					catch (IOException e) {
@@ -268,11 +276,8 @@ public class MainActivity extends FragmentActivity {
 
 		@Override
 		public void onPostExecute(Boolean imageUpdated) {
-
-			if(imageUpdated) {
-				// TODO
-				// find the item in the list and show the new picture
-			}
+			if(imageUpdated)
+				MainActivity.this.refreshList();
 
 		}
 	};

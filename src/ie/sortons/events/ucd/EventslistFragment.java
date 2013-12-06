@@ -126,9 +126,11 @@ public class EventslistFragment extends ListFragment implements OnItemClickListe
 	}
 	
 	public void updateList(){
-		adapter.clear();
-		adapter = new DiscoveredEventRowAdapter(inflater.getContext(), events);
-		setListAdapter(adapter);
+		if(adapter!=null){
+			adapter.clear();
+			adapter = new DiscoveredEventRowAdapter(inflater.getContext(), events);
+			setListAdapter(adapter);
+		}
 	}
 
 }

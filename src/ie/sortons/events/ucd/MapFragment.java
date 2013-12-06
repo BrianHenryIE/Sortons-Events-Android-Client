@@ -54,9 +54,11 @@ public class MapFragment extends Fragment {
 	}
 
 	public void setList(ArrayList<HashMap<String, String>> events) {
-		Log.i("MapFrag", "events set from MainActivity");
 		this.events = events;	
-		showEvents();
+		if(map!=null){
+			map.clear();
+			showEvents();
+		}
 	}
 
 	
