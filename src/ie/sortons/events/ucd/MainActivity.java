@@ -223,7 +223,7 @@ public class MainActivity extends FragmentActivity {
 			Boolean imageUpdated = false;
 
 			try {
-				// TOOD
+				// TODO
 				// Square isn't always 50x50
 				URL url = new URL ( "https://graph.facebook.com/" + params[0] + "/picture?type=square" );
 				HttpURLConnection connection =  (HttpURLConnection) url.openConnection();
@@ -231,7 +231,7 @@ public class MainActivity extends FragmentActivity {
 				connection.connect();
 
 				// TBH I don't know if it's pulled the whole thing down from the server at this point.
-				if( connection.getURL().equals( dbTools.getEventInfo(params[0]).get("picUrl") ) ) {
+				if( !connection.getURL().toString().equals( dbTools.getEventInfo(params[0]).get("picUrl") ) ) {				 
 					imageUpdated = true;
 					InputStream in = connection.getInputStream();
 					Bitmap newImage = BitmapFactory.decodeStream(in);
@@ -248,6 +248,7 @@ public class MainActivity extends FragmentActivity {
 					catch (IOException e) {
 						// Error while creating file
 					}
+					Log.i("connection.getURL()2", connection.getURL().toString());
 				}
 
 			} catch (MalformedURLException e) {
