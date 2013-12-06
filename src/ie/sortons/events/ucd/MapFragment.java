@@ -35,7 +35,6 @@ public class MapFragment extends Fragment {
 		    Log.e("map", " " + e.getMessage());
 		}
 	
-	
 	    FragmentManager myFM = getActivity().getSupportFragmentManager();
 	    
 		// Get a handle to the Map Fragment

@@ -39,7 +39,7 @@ import com.google.api.client.json.gson.GsonFactory;
 
 public class MainActivity extends FragmentActivity {
 
-	private String clientId = "197528567092983";
+	public final String clientId = "197528567092983";
 
 	DBTools dbTools = new DBTools(this);
 	ProgressDialog dialog;
