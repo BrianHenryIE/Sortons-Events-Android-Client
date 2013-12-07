@@ -26,7 +26,7 @@ import com.appspot.sortonsevents.upcomingEvents.model.DiscoveredEvent;
 public class DiscoveredEventRowAdapter extends ArrayAdapter<DiscoveredEvent> {
 
 	private final Context context;
-	List<DiscoveredEvent> events;
+	private List<DiscoveredEvent> events;
 
 	public DiscoveredEventRowAdapter(Context context, List<DiscoveredEvent> events) {
 		super(context, R.layout.discoveredeventlistrow);
@@ -42,16 +42,16 @@ public class DiscoveredEventRowAdapter extends ArrayAdapter<DiscoveredEvent> {
 		protected TextView eventId;
 	}
 
-	public List<DiscoveredEvent> getEvents(){
-		return events;
-	}
-
 	@Override
 	public int getCount() {
+		// TODO
+		// Does this need to be overwriten?
 		return events.size();
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.widget.ArrayAdapter#getView(int, android.view.View, android.view.ViewGroup)
 	 */
 	@Override
@@ -74,7 +74,6 @@ public class DiscoveredEventRowAdapter extends ArrayAdapter<DiscoveredEvent> {
 			view = convertView;
 		}
 
-
 		ViewHolder holder = (ViewHolder) view.getTag();
 
 		holder.name.setText(events.get(position).getFbEvent().getName());
@@ -84,76 +83,79 @@ public class DiscoveredEventRowAdapter extends ArrayAdapter<DiscoveredEvent> {
 		try {
 			// TODO
 			// Use the DateTime object and not the string
-			Date eventDate  = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ENGLISH).parse(events.get(position).getFbEvent().getStartTime());
-			
-			Calendar today = new GregorianCalendar();
-			today.setTime(eventDate);
-			today.get(Calendar.DAY_OF_YEAR);
+			Date eventDate;
+			if (events.get(position).getFbEvent().getStartTime().length() == 10)
+				eventDate = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).parse(events.get(position).getFbEvent().getStartTime());
+			else
+				eventDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz", Locale.ENGLISH).parse(events.get(position).getFbEvent().getStartTime());
 
-			Calendar tomorrow = new GregorianCalendar();
-			tomorrow.setTime(eventDate);
-			tomorrow.add(Calendar.DATE, -1);
-			tomorrow.get(Calendar.DAY_OF_YEAR);
+			Calendar now = new GregorianCalendar();
+			now.setTime(new Date());
 
-			Calendar nextFiveDays = new GregorianCalendar();
-			nextFiveDays.setTime(eventDate);
-			nextFiveDays.add(Calendar.DATE, -5);
-			nextFiveDays.get(Calendar.DAY_OF_YEAR);
+			Calendar timeOfEvent = new GregorianCalendar();
+			timeOfEvent.setTime(eventDate);
+
+			Calendar eventTomorrow = new GregorianCalendar();
+			eventTomorrow.setTime(eventDate);
+			eventTomorrow.add(Calendar.DATE, -1);
+
+			Calendar eventNextFiveDays = new GregorianCalendar();
+			eventNextFiveDays.setTime(eventDate);
+			eventNextFiveDays.add(Calendar.DATE, -5);
 
 			String sdfTemplate = null;
 			// For events today
-			if ( today.get(Calendar.DAY_OF_YEAR) == Calendar.getInstance().get(Calendar.DAY_OF_YEAR) ) {
-				if ( eventDate.getHours() == 0 && eventDate.getMinutes() == 0 )
-					sdfTemplate = "'"+context.getString(R.string.today)+"'";
+			if (timeOfEvent.get(Calendar.DAY_OF_YEAR) == Calendar.getInstance().get(Calendar.DAY_OF_YEAR)) {
+				if (eventDate.getHours() == 0 && eventDate.getMinutes() == 0)
+					sdfTemplate = "'" + context.getString(R.string.today) + "'";
 				else
-					sdfTemplate = "'"+context.getString(R.string.today_at)+"'k':'mm";
-				
+					sdfTemplate = "'" + context.getString(R.string.today_at) + "'k':'mm";
+
 				// For events tomorrow
-			} else if ( tomorrow.get(Calendar.DAY_OF_YEAR) == Calendar.getInstance().get(Calendar.DAY_OF_YEAR) ) {
-				if ( eventDate.getHours() == 0 && eventDate.getMinutes() == 0 )
-					sdfTemplate = "'"+context.getString(R.string.tomorrow)+"'";
+			} else if (eventTomorrow.get(Calendar.DAY_OF_YEAR) == Calendar.getInstance().get(Calendar.DAY_OF_YEAR)) {
+				if (eventDate.getHours() == 0 && eventDate.getMinutes() == 0)
+					sdfTemplate = "'" + context.getString(R.string.tomorrow) + "'";
 				else
-					sdfTemplate = "'"+context.getString(R.string.tomorrow_at)+"'k':'mm";
+					sdfTemplate = "'" + context.getString(R.string.tomorrow_at) + "'k':'mm";
 
 				// For events this week
-			} else if ( nextFiveDays.get(Calendar.DAY_OF_YEAR) < Calendar.getInstance().get(Calendar.DAY_OF_YEAR) ) {
-				if ( eventDate.getHours() == 0 && eventDate.getMinutes() == 0 )
+			} else if (eventNextFiveDays.get(Calendar.DAY_OF_YEAR) < Calendar.getInstance().get(Calendar.DAY_OF_YEAR)
+					&& eventNextFiveDays.get(Calendar.YEAR) == Calendar.getInstance().get(Calendar.YEAR)) {
+				if (eventDate.getHours() == 0 && eventDate.getMinutes() == 0)
 					sdfTemplate = "EEEE";
 				else
 					sdfTemplate = "EEEE' at 'k':'mm";
 
 				// For events next year
-			} else if ( eventDate.getYear() != new Date().getYear() ) {
-				if ( eventDate.getHours() == 0 && eventDate.getMinutes() == 0 )
-					sdfTemplate = "EEEE', 'MM' 'LLLL', 'yyyy";
+			} else if (now.get(Calendar.YEAR) < timeOfEvent.get(Calendar.YEAR)) {
+				if (eventDate.getHours() == 0 && eventDate.getMinutes() == 0)
+					sdfTemplate = "EEEE', 'd' 'LLLL', 'yyyy";
 				else
-					sdfTemplate = "EEEE', 'MM' 'LLLL', 'yyyy', at 'k':'mm";
+					sdfTemplate = "EEEE', 'd' 'LLLL', 'yyyy', at 'k':'mm";
 
 				// For everything in between
 			} else {
-				if ( eventDate.getHours() == 0 && eventDate.getMinutes() == 0 )
-					sdfTemplate = "EEEE', 'MM' 'LLLL";
+				if (eventDate.getHours() == 0 && eventDate.getMinutes() == 0)
+					sdfTemplate = "EEEE', 'd' 'LLLL";
 				else
-					sdfTemplate = "EEEE', 'MM' 'LLLL', at 'k':'mm";
+					sdfTemplate = "EEEE', 'd' 'LLLL', at 'k':'mm";
 			}
 
 			SimpleDateFormat sdf = new SimpleDateFormat(sdfTemplate, Locale.getDefault());
-			holder.time.setText( sdf.format( eventDate ) );
+			holder.time.setText(sdf.format(eventDate));
 
 		} catch (ParseException e1) {
 			e1.printStackTrace();
 		}
 
-
-		File eventPic = new File(context.getCacheDir(), events.get(position).getEid());	
-		if ( eventPic.exists() )
+		File eventPic = new File(context.getCacheDir(), events.get(position).getEid());
+		if (eventPic.exists())
 			try {
-				holder.picture.setImageBitmap( Bitmap.createBitmap(BitmapFactory.decodeFile( eventPic.getCanonicalPath() ), 0, 0, 50, 50) );
+				holder.picture.setImageBitmap(Bitmap.createBitmap(BitmapFactory.decodeFile(eventPic.getCanonicalPath()), 0, 0, 50, 50));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 
 		return view;
 	}
-} 
-
+}

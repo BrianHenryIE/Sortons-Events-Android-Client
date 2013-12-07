@@ -1,11 +1,7 @@
 package ie.sortons.events.ucd;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -21,7 +17,6 @@ public class DbTools extends SQLiteOpenHelper {
 
 	public DbTools(Context app_context) {
 		super(app_context, "modulelist.db", null, 1);
-
 	}
 
 	@Override
@@ -57,7 +52,6 @@ public class DbTools extends SQLiteOpenHelper {
 
 		db.update("events", values, "eventId=" + event.getEid(), null);
 
-
 		// TODO
 		// Source pages
 
@@ -86,8 +80,8 @@ public class DbTools extends SQLiteOpenHelper {
 
 		deleteEvents(toBeDeleted);
 		insertEvents(toBeAdded);
+		
 	}
-
 
 	public void insertEvents(List<DiscoveredEvent> values) {
 		SQLiteDatabase db = this.getWritableDatabase();
@@ -127,8 +121,8 @@ public class DbTools extends SQLiteOpenHelper {
 		// db.close();
 	}
 
-	// should be called by deleteAllEventsBeforeDate
-	public void deleteEvents(List<DiscoveredEvent> toBeDeleted) {
+
+	private void deleteEvents(List<DiscoveredEvent> toBeDeleted) {
 		SQLiteDatabase db = this.getWritableDatabase();
 		for (DiscoveredEvent de : toBeDeleted) {
 			String q = "DELETE FROM events WHERE eventId='" + de.getEid() + "'";
@@ -139,22 +133,6 @@ public class DbTools extends SQLiteOpenHelper {
 		// db.close();
 	}
 
-	// pass in Date and all events before date are deleted
-	private void deleteAllEventsBeforeDate(Date before) {
-		List<DiscoveredEvent> events = getEvents();
-		List<String> toDelete = new ArrayList<String>();
-		for (DiscoveredEvent de : events) {
-			try {
-				Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.ENGLISH).parse(de.getFbEvent().getStartTime());
-				if (date.before(before)) {
-					toDelete.add(de.getEid());
-				}
-			} catch (ParseException e) {
-				// doNothing
-			}
-		}
-		//deleteEvents(toDelete);
-	}
 
 	public List<DiscoveredEvent> getEvents() {
 		List<DiscoveredEvent> eventList = new ArrayList<DiscoveredEvent>();
@@ -173,9 +151,9 @@ public class DbTools extends SQLiteOpenHelper {
 				fbe.setLocation(cursor.getString(3));
 				fbe.setStartTime(cursor.getString(4));
 				fbe.setEndTime(cursor.getString(5));
-				if(cursor.getString(6)!=null) 
+				if (cursor.getString(6) != null)
 					fbe.setLatitude(Double.parseDouble(cursor.getString(6)));
-				if(cursor.getString(7)!=null)
+				if (cursor.getString(7) != null)
 					fbe.setLongitude(Double.parseDouble(cursor.getString(7)));
 				fbe.setPicSquare(cursor.getString(8));
 				e.setFbEvent(fbe);
@@ -187,7 +165,7 @@ public class DbTools extends SQLiteOpenHelper {
 		return eventList;
 	}
 
-	public DiscoveredEvent getEventInfo(String id) {
+	public DiscoveredEvent getEvent(String id) {
 		DiscoveredEvent de = new DiscoveredEvent();
 		SQLiteDatabase db = this.getReadableDatabase();
 		String q = "SELECT * FROM events WHERE eventId='" + id + "'";
@@ -200,9 +178,9 @@ public class DbTools extends SQLiteOpenHelper {
 			fbe.setLocation(cursor.getString(3));
 			fbe.setStartTime(cursor.getString(4));
 			fbe.setEndTime(cursor.getString(5));
-			if(cursor.getString(6)!=null) 
+			if (cursor.getString(6) != null)
 				fbe.setLatitude(Double.parseDouble(cursor.getString(6)));
-			if(cursor.getString(7)!=null)
+			if (cursor.getString(7) != null)
 				fbe.setLongitude(Double.parseDouble(cursor.getString(7)));
 			fbe.setPicSquare(cursor.getString(8));
 			de.setFbEvent(fbe);
@@ -211,25 +189,6 @@ public class DbTools extends SQLiteOpenHelper {
 		}
 		// db.close();
 		return de;
-	}
-
-	private List<FbPage> getSourcePagesForEvent(String eventId) {
-		List<FbPage> pageList = new ArrayList<FbPage>();
-		SQLiteDatabase db = this.getReadableDatabase();
-		String q = "SELECT * FROM sourcePages WHERE eventId='" + eventId + "'";
-		Cursor cursor = db.rawQuery(q, null);
-		if (cursor.moveToFirst()) {
-			FbPage page = new FbPage();
-			do {
-				page.setPageId(cursor.getString(1));
-				page.setName(cursor.getString(2));
-				page.setPageUrl(cursor.getString(3));
-
-				pageList.add(page);
-			} while (cursor.moveToNext());
-		}
-		// db.close();
-		return pageList;
 	}
 
 	public void savePicUrl(String eventId, String picUrl) {

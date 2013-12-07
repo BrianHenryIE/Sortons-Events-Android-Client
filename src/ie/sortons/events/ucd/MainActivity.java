@@ -7,10 +7,8 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -22,10 +20,10 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
-import android.view.Menu;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
+import com.appspot.sortonsevents.clientdata.Clientdata;
+import com.appspot.sortonsevents.clientdata.model.ClientPageData;
 import com.appspot.sortonsevents.upcomingEvents.UpcomingEvents;
 import com.appspot.sortonsevents.upcomingEvents.model.DiscoveredEvent;
 import com.appspot.sortonsevents.upcomingEvents.model.DiscoveredEventCollection;
@@ -34,11 +32,7 @@ import com.google.api.client.json.gson.GsonFactory;
 
 public class MainActivity extends FragmentActivity {
 
-	public static final String CLIENTID = "197528567092983";
-
 	DbTools dbTools = new DbTools(this);
-	ProgressDialog dialog;
-	TextView txtMessage;
 
 	ViewGroup mapFrame; // (frame)
 	ViewGroup eventslistFrame; // (frame)
@@ -55,6 +49,9 @@ public class MainActivity extends FragmentActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		Data.events = dbTools.getEvents();
+
 		setContentView(R.layout.activity_main);
 
 		if (isXLargeScreen(this))
@@ -70,23 +67,20 @@ public class MainActivity extends FragmentActivity {
 			// restored from a saved state
 
 		} else {
-			// If this is the first creation of the activity, add fragments to
-			// it
-			// If our layout has a container for the events list... fragment,
-			// create and add it
+			// If this is the first creation of the activity, add fragments to it
+			// If our layout has a container for the events list... fragment, create and add it
 
 			eventslistFrame = (ViewGroup) findViewById(R.id.eventslist_frame);
 			if (eventslistFrame != null) {
 				eventslistFragment = new EventslistFragment();
 				fragmentTransaction.replace(eventslistFrame.getId(), eventslistFragment, EventslistFragment.class.getName());
-				eventslistFragment.setList(dbTools.getEvents());
+				eventslistFragment.showEvents();
 			}
 
 			mapFrame = (ViewGroup) findViewById(R.id.map_frame);
 			if (mapFrame != null) {
 				mapFragment = new MapFragment();
 				fragmentTransaction.replace(mapFrame.getId(), mapFragment, MapFragment.class.getName());
-				mapFragment.setList(dbTools.getEvents());
 			}
 
 			newsfeedFrame = (ViewGroup) findViewById(R.id.newsfeed_frame);
@@ -98,12 +92,12 @@ public class MainActivity extends FragmentActivity {
 			fragmentTransaction.commit();
 		}
 
-		queryCloudEndpoint();
+		getUpcomingEvents();
 
-		getPics();
+		getClientPageData();
 
-		Log.i("dbTools.getEvents()", "" + dbTools.getEvents().size());
-
+		// TODO
+		// unbreak phones
 		if (!isXLargeScreen(this)) {
 			Intent phoneIntent = new Intent(getApplication(), MainPhoneActivity.class);
 			startActivity(phoneIntent);
@@ -111,18 +105,19 @@ public class MainActivity extends FragmentActivity {
 		}
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
-	}
-
 	public void onConfigurationChanged() {
 		// http://androidblogger.blogspot.ie/2011/08/orientation-for-both-phones-and-tablets.html
 	}
 
-	private void queryCloudEndpoint() {
+	public void refreshViews() {
+		if (eventslistFragment != null)
+			eventslistFragment.showEvents();
+
+		if (mapFragment != null)
+			mapFragment.showEvents();
+	}
+
+	private void getUpcomingEvents() {
 
 		AsyncTask<String, Void, List<DiscoveredEvent>> task = new AsyncTask<String, Void, List<DiscoveredEvent>>() {
 
@@ -143,40 +138,18 @@ public class MainActivity extends FragmentActivity {
 			@Override
 			public void onPostExecute(List<DiscoveredEvent> data) {
 
-				if (data != null) {
+				if (data != null)
 					dbTools.updateEvents(data);
-				} else {
-					Log.i("onPostExecute", "no data was returned");
-				}
+				
+				refreshViews();
 
-				if (eventslistFragment != null) {
-					eventslistFragment.setList(data);
-					eventslistFragment.updateList();
-				}
+				for (DiscoveredEvent event : dbTools.getEvents())
+					new GetPicture().execute(event.getEid());
 
-				if (mapFragment != null)
-					mapFragment.setList(data);
-
-				MainActivity.this.getPics();
-				// dialog.dismiss();
 			}
 		};
 
-		task.execute(CLIENTID);
-	}
-
-	// https://graph.facebook.com/shaverm/picture?type=square
-	private void getPics() {
-		for (DiscoveredEvent event : dbTools.getEvents())
-			new GetPicture().execute(event.getEid());
-	}
-
-	private void refreshList() {
-		if (eventslistFragment != null)
-			eventslistFragment.updateList();
-
-		if (mapFragment != null)
-			mapFragment.setList(dbTools.getEvents());
+		task.execute(Data.CLIENTID);
 	}
 
 	// TODO:
@@ -187,11 +160,6 @@ public class MainActivity extends FragmentActivity {
 	// A common solution to this is to declare the AsyncTask in a retained
 	// headless fragment.
 	private class GetPicture extends AsyncTask<String, Void, Boolean> {
-
-		@Override
-		public void onPreExecute() {
-
-		}
 
 		@Override
 		protected Boolean doInBackground(String... params) {
@@ -207,8 +175,8 @@ public class MainActivity extends FragmentActivity {
 				// TBH I don't know if it's pulled the whole thing down from the
 				// server at this point.
 				String picUrl = "";
-				if (dbTools.getEventInfo(params[0]).getFbEvent() != null && dbTools.getEventInfo(params[0]).getFbEvent().getPicSquare() != null)
-					picUrl = dbTools.getEventInfo(params[0]).getFbEvent().getPicSquare();
+				if (dbTools.getEvent(params[0]).getFbEvent() != null && dbTools.getEvent(params[0]).getFbEvent().getPicSquare() != null)
+					picUrl = dbTools.getEvent(params[0]).getFbEvent().getPicSquare();
 
 				// TODO
 				// This isn't working
@@ -241,10 +209,36 @@ public class MainActivity extends FragmentActivity {
 		@Override
 		public void onPostExecute(Boolean imageUpdated) {
 			if (imageUpdated)
-				MainActivity.this.refreshList();
-
+				refreshViews();
 		}
 	};
+
+	private void getClientPageData() {
+
+		AsyncTask<String, Void, ClientPageData> task = new AsyncTask<String, Void, ClientPageData>() {
+
+			@Override
+			protected ClientPageData doInBackground(String... params) {
+				Clientdata.Builder builder = new Clientdata.Builder(AndroidHttp.newCompatibleTransport(), new GsonFactory(), null /* httpRequestInitializer */);
+				try {
+					return  builder.build().clientPageDataEndpoint().getClientPageData(params[0]).execute();
+				} catch (IOException e) {
+					Log.e("error:", e.toString());
+					return null;
+				}
+			}
+
+			@Override
+			public void onPostExecute(ClientPageData data) {
+				Data.clientPageData = data;
+				for (com.appspot.sortonsevents.clientdata.model.FbPage page : data.getIncludedPages())
+					if (!page.getPageUrl().contains("pages/"))
+						Data.fbPages.put(page.getPageUrl().replace("http://www.facebook.com/", ""), page.getPageId());
+			}
+		};
+
+		task.execute(Data.CLIENTID);
+	}
 
 	private boolean isXLargeScreen(Context context) {
 		return (context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_XLARGE;

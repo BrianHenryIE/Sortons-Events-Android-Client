@@ -1,7 +1,5 @@
 package ie.sortons.events.ucd;
 
-import java.util.List;
-
 import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
@@ -17,20 +15,18 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.appspot.sortonsevents.upcomingEvents.model.DiscoveredEvent;
 
 public class EventslistFragment extends ListFragment implements OnItemClickListener {
 
 	private LayoutInflater inflater;
-	private List<DiscoveredEvent> events; 
 
 	private DiscoveredEventRowAdapter adapter;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		adapter = new DiscoveredEventRowAdapter(inflater.getContext(), events);
+		adapter = new DiscoveredEventRowAdapter(inflater.getContext(), Data.events);
 		setListAdapter(adapter);
 		this.inflater = inflater;
 		return super.onCreateView(inflater, container, savedInstanceState);
@@ -50,7 +46,7 @@ public class EventslistFragment extends ListFragment implements OnItemClickListe
 
 	    // Retrieve the item that was clicked on
 	    AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
-	    eventId = events.get(info.position).getEid();
+	    eventId = Data.events.get(info.position).getEid();
 
 		MenuInflater mInflater = this.getActivity().getMenuInflater();
 		mInflater.inflate(R.menu.my_context_menu, menu);
@@ -81,7 +77,7 @@ public class EventslistFragment extends ListFragment implements OnItemClickListe
 			return true;
 
 		case R.id.add_to_calendar: 
-			DiscoveredEvent event = new DbTools(inflater.getContext()).getEventInfo(eventId);
+			DiscoveredEvent event = new DbTools(inflater.getContext()).getEvent(eventId);
 			
 			intent = new Intent(Intent.ACTION_INSERT);
 			intent.setType("vnd.android.cursor.item/event");
@@ -115,21 +111,13 @@ public class EventslistFragment extends ListFragment implements OnItemClickListe
 			}
 			startActivity(intent);
 		}
-		else {
-			Toast.makeText(getActivity().getBaseContext(), "Item clicked: " + position, Toast.LENGTH_LONG).show();
-		}
 
 	}
 
-
-	public void setList(List<DiscoveredEvent> events) {
-		this.events = events;	
-	}
-	
-	public void updateList(){
-		if(adapter!=null){
+	public void showEvents(){
+		if(adapter!=null && Data.events != null){
 			adapter.clear();
-			adapter = new DiscoveredEventRowAdapter(inflater.getContext(), events);
+			adapter = new DiscoveredEventRowAdapter(inflater.getContext(), Data.events);
 			setListAdapter(adapter);
 		}
 	}

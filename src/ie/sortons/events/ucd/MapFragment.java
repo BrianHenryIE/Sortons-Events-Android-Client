@@ -1,76 +1,62 @@
 package ie.sortons.events.ucd;
 
-import java.util.List;
-
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.FrameLayout;
 
 import com.appspot.sortonsevents.upcomingEvents.model.DiscoveredEvent;
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MapFragment extends Fragment {
-	
-	GoogleMap map;
-	private List<DiscoveredEvent> events;
-	
+public class MapFragment extends SupportMapFragment {
+
+	GoogleMap map = getMap();
+
+	public MapFragment() {
+	}
+
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.fragment_map, container, false);
-		Log.i("map fragment", "onCreateView");
+	public View onCreateView(LayoutInflater inflater, ViewGroup viewGroup, Bundle bundle) {
+		View view = super.onCreateView(inflater, viewGroup, bundle);
 
-		try {
-		    MapsInitializer.initialize(inflater.getContext());
-		} catch (GooglePlayServicesNotAvailableException e) {
-		    Log.e("map", " " + e.getMessage());
-		}
-	
-	    FragmentManager myFM = getActivity().getSupportFragmentManager();
-	    
-		// Get a handle to the Map Fragment
-		map = ((SupportMapFragment) myFM.findFragmentById(R.id.map)).getMap();
-		
-		map.getUiSettings().setZoomControlsEnabled(false);
-		map.getUiSettings().setMyLocationButtonEnabled(false);
-	
-		LatLng home = new LatLng(53.307775, -6.219453);
+		FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+		view.setLayoutParams(params);
 
-		map.moveCamera(CameraUpdateFactory.newLatLngZoom(home, 14));
-
-		showEvents();
-		
 		return view;
 	}
 
-	public void setList(List<DiscoveredEvent> events) {
-		this.events = events;	
-		if(map!=null){
-			map.clear();
-			showEvents();
-		}
-	}
+	public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        map = this.getMap();
 
-	
-	public void showEvents(){
-		
-		if ( events != null && this.isAdded() ) 
-			for( DiscoveredEvent event : events ) {
-				if( event.getFbEvent().getLatitude() != null && event.getFbEvent().getLongitude() != null ) {
+		map.moveCamera(CameraUpdateFactory.newLatLngZoom(Data.MAPCENTRE, 14));
+
+		map.getUiSettings().setZoomControlsEnabled(false);
+		map.getUiSettings().setMyLocationButtonEnabled(false);
+
+		showEvents();
+
+    }
+
+	public void showEvents() {
+
+		if (Data.events != null && map != null && this.isAdded()) {
+			map.clear();
+			for (DiscoveredEvent event : Data.events) {
+				if (event.getFbEvent().getLatitude() != null && event.getFbEvent().getLongitude() != null) {
 					LatLng eventPin = new LatLng(event.getFbEvent().getLatitude(), event.getFbEvent().getLongitude());
-					map.addMarker(new MarkerOptions().title(event.getFbEvent().getName()).snippet(event.getFbEvent().getLocation()).position(eventPin));
+					map.addMarker(new MarkerOptions().title(event.getFbEvent().getName()).snippet(event.getFbEvent().getLocation())
+							.position(eventPin));
 				}
 			}
-				
+		}
+
 	}
-	
+
 }
