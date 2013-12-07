@@ -7,7 +7,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -22,21 +21,20 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class DiscoveredEventRowAdapter extends ArrayAdapter<HashMap<String,String>> {
+import com.appspot.sortonsevents.upcomingEvents.model.DiscoveredEvent;
 
-	DBTools dbTools;
+public class DiscoveredEventRowAdapter extends ArrayAdapter<DiscoveredEvent> {
+
 	private final Context context;
-	List<HashMap<String,String>> events;
+	List<DiscoveredEvent> events;
 
-	public DiscoveredEventRowAdapter(Context context, List<HashMap<String,String>> events) {
+	public DiscoveredEventRowAdapter(Context context, List<DiscoveredEvent> events) {
 		super(context, R.layout.discoveredeventlistrow);
 		this.context = context;
-		dbTools = new DBTools(context);
 		this.events = events;
 	}
 
 	static class ViewHolder {
-
 		protected TextView name;
 		protected TextView time;
 		protected TextView location;
@@ -44,7 +42,7 @@ public class DiscoveredEventRowAdapter extends ArrayAdapter<HashMap<String,Strin
 		protected TextView eventId;
 	}
 
-	public List<HashMap<String,String>> getEvents(){
+	public List<DiscoveredEvent> getEvents(){
 		return events;
 	}
 
@@ -79,13 +77,15 @@ public class DiscoveredEventRowAdapter extends ArrayAdapter<HashMap<String,Strin
 
 		ViewHolder holder = (ViewHolder) view.getTag();
 
-		holder.name.setText(events.get(position).get("name"));
-		holder.location.setText(events.get(position).get("location"));
-		holder.eventId.setText(events.get(position).get("eventId"));
+		holder.name.setText(events.get(position).getFbEvent().getName());
+		holder.location.setText(events.get(position).getFbEvent().getLocation());
+		holder.eventId.setText(events.get(position).getEid());
 
 		try {
-			Date eventDate  = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ENGLISH).parse(events.get(position).get("startTimeDate"));
-
+			// TODO
+			// Use the DateTime object and not the string
+			Date eventDate  = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ENGLISH).parse(events.get(position).getFbEvent().getStartTime());
+			
 			Calendar today = new GregorianCalendar();
 			today.setTime(eventDate);
 			today.get(Calendar.DAY_OF_YEAR);
@@ -145,7 +145,7 @@ public class DiscoveredEventRowAdapter extends ArrayAdapter<HashMap<String,Strin
 		}
 
 
-		File eventPic = new File(context.getCacheDir(), events.get(position).get("eventId"));	
+		File eventPic = new File(context.getCacheDir(), events.get(position).getEid());	
 		if ( eventPic.exists() )
 			try {
 				holder.picture.setImageBitmap( Bitmap.createBitmap(BitmapFactory.decodeFile( eventPic.getCanonicalPath() ), 0, 0, 50, 50) );

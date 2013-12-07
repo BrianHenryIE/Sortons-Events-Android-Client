@@ -1,7 +1,6 @@
 package ie.sortons.events.ucd;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.appspot.sortonsevents.upcomingEvents.model.DiscoveredEvent;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -22,7 +22,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 public class MapFragment extends Fragment {
 	
 	GoogleMap map;
-	private ArrayList<HashMap<String, String>> events;
+	private List<DiscoveredEvent> events;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -52,7 +52,7 @@ public class MapFragment extends Fragment {
 		return view;
 	}
 
-	public void setList(ArrayList<HashMap<String, String>> events) {
+	public void setList(List<DiscoveredEvent> events) {
 		this.events = events;	
 		if(map!=null){
 			map.clear();
@@ -64,10 +64,10 @@ public class MapFragment extends Fragment {
 	public void showEvents(){
 		
 		if ( events != null && this.isAdded() ) 
-			for( HashMap<String, String> event : events ) {
-				if( event.keySet().contains("latitude") && event.get("latitude") != null && event.keySet().contains("longitude") && event.get("longitude") != null ) {
-					LatLng eventPin = new LatLng(Double.parseDouble(event.get("latitude")), Double.parseDouble(event.get("longitude")) );
-					map.addMarker(new MarkerOptions().title(event.get("name")).snippet(event.get("location")).position(eventPin));
+			for( DiscoveredEvent event : events ) {
+				if( event.getFbEvent().getLatitude() != null && event.getFbEvent().getLongitude() != null ) {
+					LatLng eventPin = new LatLng(event.getFbEvent().getLatitude(), event.getFbEvent().getLongitude());
+					map.addMarker(new MarkerOptions().title(event.getFbEvent().getName()).snippet(event.getFbEvent().getLocation()).position(eventPin));
 				}
 			}
 				

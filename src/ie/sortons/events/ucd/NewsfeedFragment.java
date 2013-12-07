@@ -199,7 +199,7 @@ public class NewsfeedFragment extends Fragment {
 			}
 		};
 
-		task.execute(clientId);
+		task.execute(MainActivity.CLIENTID);
 	}
 
 

@@ -1,6 +1,5 @@
 package ie.sortons.events.ucd;
 
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -9,7 +8,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import android.app.ProgressDialog;
@@ -31,17 +29,14 @@ import android.widget.TextView;
 import com.appspot.sortonsevents.upcomingEvents.UpcomingEvents;
 import com.appspot.sortonsevents.upcomingEvents.model.DiscoveredEvent;
 import com.appspot.sortonsevents.upcomingEvents.model.DiscoveredEventCollection;
-import com.appspot.sortonsevents.upcomingEvents.model.FbEvent;
-import com.appspot.sortonsevents.upcomingEvents.model.FbPage;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.json.gson.GsonFactory;
 
-
 public class MainActivity extends FragmentActivity {
 
-	public final String clientId = "197528567092983";
+	public static final String CLIENTID = "197528567092983";
 
-	DBTools dbTools = new DBTools(this);
+	DbTools dbTools = new DbTools(this);
 	ProgressDialog dialog;
 	TextView txtMessage;
 
@@ -50,9 +45,11 @@ public class MainActivity extends FragmentActivity {
 	ViewGroup newsfeedFrame; // (frame)
 
 	EventslistFragment eventslistFragment;
-	MapFragment mapFragment; 
+	MapFragment mapFragment;
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.support.v4.app.FragmentActivity#onCreate(android.os.Bundle)
 	 */
 	@Override
@@ -60,7 +57,7 @@ public class MainActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		if ( isXLargeScreen(this) )
+		if (isXLargeScreen(this))
 			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 		else
 			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -73,8 +70,10 @@ public class MainActivity extends FragmentActivity {
 			// restored from a saved state
 
 		} else {
-			// If this is the first creation of the activity, add fragments to it
-			// If our layout has a container for the events list... fragment, create and add it
+			// If this is the first creation of the activity, add fragments to
+			// it
+			// If our layout has a container for the events list... fragment,
+			// create and add it
 
 			eventslistFrame = (ViewGroup) findViewById(R.id.eventslist_frame);
 			if (eventslistFrame != null) {
@@ -103,13 +102,14 @@ public class MainActivity extends FragmentActivity {
 
 		getPics();
 
+		Log.i("dbTools.getEvents()", "" + dbTools.getEvents().size());
+
 		if (!isXLargeScreen(this)) {
 			Intent phoneIntent = new Intent(getApplication(), MainPhoneActivity.class);
 			startActivity(phoneIntent);
 			finish();
 		}
 	}
-
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -118,26 +118,17 @@ public class MainActivity extends FragmentActivity {
 		return true;
 	}
 
-	public void onConfigurationChanged(){
+	public void onConfigurationChanged() {
 		// http://androidblogger.blogspot.ie/2011/08/orientation-for-both-phones-and-tablets.html
 	}
-
 
 	private void queryCloudEndpoint() {
 
 		AsyncTask<String, Void, List<DiscoveredEvent>> task = new AsyncTask<String, Void, List<DiscoveredEvent>>() {
 
 			@Override
-			public void onPreExecute() {
-
-				// txtMessage.setText("Connecting....");
-				//dialog = ProgressDialog.show(MainActivity.this, null /* title */, "Please wait...");
-			}
-
-			@Override
 			protected List<DiscoveredEvent> doInBackground(String... params) {
-				UpcomingEvents.Builder builder = new UpcomingEvents.Builder(
-						AndroidHttp.newCompatibleTransport(), new GsonFactory(), null /* httpRequestInitializer */);
+				UpcomingEvents.Builder builder = new UpcomingEvents.Builder(AndroidHttp.newCompatibleTransport(), new GsonFactory(), null /* httpRequestInitializer */);
 				try {
 					DiscoveredEventCollection pojo = builder.build().upcomingEventsEndpoint().getList(params[0]).execute();
 
@@ -151,86 +142,54 @@ public class MainActivity extends FragmentActivity {
 
 			@Override
 			public void onPostExecute(List<DiscoveredEvent> data) {
-				// txtMessage.setText("");
 
 				if (data != null) {
-					Log.i("onPostExecute", "endpoint returned "+data.size());
-					ArrayList<HashMap<String,String>> eventsToBeAdded = new ArrayList<HashMap<String,String>>();
-					ArrayList<HashMap<String,String>> pagesToBeAdded = new ArrayList<HashMap<String, String>>();
-					for (int i = 0; i < data.size(); i++) {
-						HashMap<String,String> entry = new HashMap<String,String>();
-						FbEvent e = data.get(i).getFbEvent();
-						String eventId = e.getEid();
-						entry.put("eventId", eventId);
-						entry.put("name",  e.getName());
-						entry.put("location", e.getLocation());
-						entry.put("startTimeDate", e.getStartTimeDate().toString());
-						entry.put("startTime", e.getStartTime());
-						if (e.getLatitude() != null) {
-							entry.put("latitude", e.getLatitude().toString());
-						}
-						if (e.getLongitude() != null) {
-							entry.put("longitude", e.getLongitude().toString());
-						}
-						for(int j = 0; j < data.get(i).getSourcePages().size(); j++) {
-							FbPage p = data.get(i).getSourcePages().get(j);
-							HashMap<String, String> page = new HashMap<String, String>(); 
-							page.put("eventId", eventId);
-							page.put("pageId", p.getPageId());
-							page.put("name", p.getName());
-							page.put("pageUrl", p.getPageUrl());
-							pagesToBeAdded.add(page);
-						}
-
-						eventsToBeAdded.add(entry);
-					}
-					dbTools.insertSourcePages(pagesToBeAdded);
-					dbTools.updateEvents(eventsToBeAdded);
-				}
-				else {
+					dbTools.updateEvents(data);
+				} else {
 					Log.i("onPostExecute", "no data was returned");
 				}
 
-				if ( eventslistFragment != null ) {
-					eventslistFragment.setList( dbTools.getEvents() );
+				if (eventslistFragment != null) {
+					eventslistFragment.setList(data);
 					eventslistFragment.updateList();
 				}
 
-				if ( mapFragment != null )					
-					mapFragment.setList( dbTools.getEvents() );
-
+				if (mapFragment != null)
+					mapFragment.setList(data);
 
 				MainActivity.this.getPics();
-				//dialog.dismiss();
+				// dialog.dismiss();
 			}
 		};
 
-		task.execute(clientId);
+		task.execute(CLIENTID);
 	}
-
 
 	// https://graph.facebook.com/shaverm/picture?type=square
 	private void getPics() {
-		for(HashMap<String, String> event : dbTools.getEvents())
-			new GetPicture().execute(event.get("eventId"));		
+		for (DiscoveredEvent event : dbTools.getEvents())
+			new GetPicture().execute(event.getEid());
 	}
 
-	private void refreshList(){
-		if ( eventslistFragment != null )
+	private void refreshList() {
+		if (eventslistFragment != null)
 			eventslistFragment.updateList();
-		
-		if ( mapFragment != null )					
-			mapFragment.setList( dbTools.getEvents() );
+
+		if (mapFragment != null)
+			mapFragment.setList(dbTools.getEvents());
 	}
 
 	// TODO:
 	// Disadvantages of using AsyncTasks
-	// The AsyncTask does not handle configuration changes automatically, i.e. if the activity is recreated, the programmer has to handle that in his coding.
-	// A common solution to this is to declare the AsyncTask in a retained headless fragment.
+	// The AsyncTask does not handle configuration changes automatically, i.e.
+	// if the activity is recreated, the programmer has to handle that in his
+	// coding.
+	// A common solution to this is to declare the AsyncTask in a retained
+	// headless fragment.
 	private class GetPicture extends AsyncTask<String, Void, Boolean> {
 
 		@Override
-		public void onPreExecute() {				
+		public void onPreExecute() {
 
 		}
 
@@ -240,14 +199,20 @@ public class MainActivity extends FragmentActivity {
 			try {
 				// TODO
 				// Square isn't always 50x50
-				URL url = new URL ( "https://graph.facebook.com/" + params[0] + "/picture?type=square" );
-				HttpURLConnection connection =  (HttpURLConnection) url.openConnection();
+				URL url = new URL("https://graph.facebook.com/" + params[0] + "/picture?type=square");
+				HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 				HttpURLConnection.setFollowRedirects(true);
 				connection.connect();
 
-				// TBH I don't know if it's pulled the whole thing down from the server at this point.
-				String picUrl = (dbTools.getEventInfo(params[0]).get("picUrl") != null ) ? dbTools.getEventInfo(params[0]).get("picUrl")  : "";
-				if( !connection.getURL().toString().equals( picUrl ) ) {				 
+				// TBH I don't know if it's pulled the whole thing down from the
+				// server at this point.
+				String picUrl = "";
+				if (dbTools.getEventInfo(params[0]).getFbEvent() != null && dbTools.getEventInfo(params[0]).getFbEvent().getPicSquare() != null)
+					picUrl = dbTools.getEventInfo(params[0]).getFbEvent().getPicSquare();
+
+				// TODO
+				// This isn't working
+				if (!connection.getURL().toString().equals(picUrl)) {
 					imageUpdated = true;
 					InputStream in = connection.getInputStream();
 					Bitmap newImage = BitmapFactory.decodeStream(in);
@@ -259,8 +224,7 @@ public class MainActivity extends FragmentActivity {
 						fOut.flush();
 						fOut.close();
 						dbTools.savePicUrl(params[0], connection.getURL().toString());
-					}
-					catch (IOException e) {
+					} catch (IOException e) {
 						// Error while creating file
 					}
 				}
@@ -276,17 +240,14 @@ public class MainActivity extends FragmentActivity {
 
 		@Override
 		public void onPostExecute(Boolean imageUpdated) {
-			if(imageUpdated)
+			if (imageUpdated)
 				MainActivity.this.refreshList();
 
 		}
 	};
 
-
 	private boolean isXLargeScreen(Context context) {
-		return (context.getResources().getConfiguration().screenLayout
-				& Configuration.SCREENLAYOUT_SIZE_MASK)
-				>= Configuration.SCREENLAYOUT_SIZE_XLARGE;
+		return (context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_XLARGE;
 	}
 
 }

@@ -1,7 +1,6 @@
 package ie.sortons.events.ucd;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -12,11 +11,13 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 
+import com.appspot.sortonsevents.upcomingEvents.model.DiscoveredEvent;
+
 public class MainPhoneActivity extends FragmentActivity {
 	NewsfeedFragment newsfeedFragment;
 	MapFragment mapFragment;
 	EventslistFragment eventslistFragment;
-	DBTools dbTools = new DBTools(this);
+	DbTools dbTools = new DbTools(this);
 	/**
      * The number of pages can swipe to
      */
@@ -46,7 +47,7 @@ public class MainPhoneActivity extends FragmentActivity {
         
         //initialize fragments
         newsfeedFragment =  new NewsfeedFragment();
-        ArrayList<HashMap<String, String>>  events = dbTools.getEvents();
+        List<DiscoveredEvent>  events = dbTools.getEvents();
         mapFragment = new MapFragment();
 		mapFragment.setList(events);
 		eventslistFragment = new EventslistFragment();

@@ -1,7 +1,6 @@
 package ie.sortons.events.ucd;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
 
 import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -20,10 +19,12 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.appspot.sortonsevents.upcomingEvents.model.DiscoveredEvent;
+
 public class EventslistFragment extends ListFragment implements OnItemClickListener {
 
 	private LayoutInflater inflater;
-	private ArrayList<HashMap<String, String>> events; 
+	private List<DiscoveredEvent> events; 
 
 	private DiscoveredEventRowAdapter adapter;
 	
@@ -49,7 +50,7 @@ public class EventslistFragment extends ListFragment implements OnItemClickListe
 
 	    // Retrieve the item that was clicked on
 	    AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
-	    eventId = events.get(info.position).get("eventId");
+	    eventId = events.get(info.position).getEid();
 
 		MenuInflater mInflater = this.getActivity().getMenuInflater();
 		mInflater.inflate(R.menu.my_context_menu, menu);
@@ -80,14 +81,14 @@ public class EventslistFragment extends ListFragment implements OnItemClickListe
 			return true;
 
 		case R.id.add_to_calendar: 
-			HashMap<String, String> event = new DBTools(inflater.getContext()).getEventInfo(eventId);
+			DiscoveredEvent event = new DbTools(inflater.getContext()).getEventInfo(eventId);
 			
 			intent = new Intent(Intent.ACTION_INSERT);
 			intent.setType("vnd.android.cursor.item/event");
-			intent.putExtra("beginTime", event.get("startTime"));
+			intent.putExtra("beginTime", event.getFbEvent().getStartTime());
 			// intent.putExtra("allDay", true);
-			intent.putExtra("title", event.get("name") );
-			intent.putExtra("eventLocation", event.get("location") );
+			intent.putExtra("title", event.getFbEvent().getName());
+			intent.putExtra("eventLocation", event.getFbEvent().getLocation());
 			startActivity(intent);
 			return true;
 
@@ -121,7 +122,7 @@ public class EventslistFragment extends ListFragment implements OnItemClickListe
 	}
 
 
-	public void setList(ArrayList<HashMap<String, String>> events) {
+	public void setList(List<DiscoveredEvent> events) {
 		this.events = events;	
 	}
 	
@@ -132,5 +133,7 @@ public class EventslistFragment extends ListFragment implements OnItemClickListe
 			setListAdapter(adapter);
 		}
 	}
+
+
 
 }
